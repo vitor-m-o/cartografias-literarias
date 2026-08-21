@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Projetos de Literatura - IF</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <!-- CABEÇALHO OFICIAL (HERO SECTION) -->
+    <header class="cabecalho-if">
+        <div class="cabecalho-conteudo">
+            <!-- DICA: Coloque a imagem da logo do seu IF na mesma pasta e mude o 'src' abaixo para "logo.png" -->
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Instituto_Federal_de_Mato_Grosso_-_Marca_Vertical_2015.svg/120px-Instituto_Federal_de_Mato_Grosso_-_Marca_Vertical_2015.svg.png" alt="Logo Instituto Federal" class="logo-if" onerror="this.style.display='none'">
+            
+            <h1>Catálogo de Projetos de Literatura</h1>
+            <p>Mapeamento nacional de iniciativas voltadas ao incentivo à leitura, ensino e cultura em nossa rede.</p>
+        </div>
+    </header>
+
+    <!-- SESSÃO 1: RESUMO DOS DADOS (GRÁFICOS) -->
+    <section class="sessao">
+        <h2 class="titulo-sessao">Visão Geral dos Dados</h2>
+        <div class="dashboard" id="dashboard" style="display: none;">
+            <div class="grafico-container"><canvas id="graficoStatus"></canvas></div>
+            <div class="grafico-container"><canvas id="graficoTipo"></canvas></div>
+            <div class="grafico-container"><canvas id="graficoInstituto"></canvas></div>
+        </div>
+    </section>
+
+    <!-- SESSÃO 2: PESQUISA E LISTA DE PROJETOS -->
+    <section class="sessao">
+        <h2 class="titulo-sessao">Explorar Projetos</h2>
+        
+        <!-- A barra de pesquisa agora fica colada nos projetos -->
+        <div class="filtros-container">
+            <input type="text" id="busca" placeholder="🔍 Pesquisar por nome ou palavra-chave no resumo..." oninput="aplicarFiltros()">
+            
+            <select id="filtroInstituto" onchange="aplicarFiltros()">
+                <option value="">🏫 Todos os Institutos / Locais</option>
+            </select>
+
+            <select id="filtroTipo" onchange="aplicarFiltros()">
+                <option value="">📂 Todos os Tipos</option>
+            </select>
+        </div>
+
+        <div id="projetos">Carregando dados da planilha do Google...</div>
+    </section>
+
+    <script>
+        // === COLOQUE O SEU LINK AQUI ===
+        const urlPlanilha = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS6uBzH5Hh75nEQ1hN2BfQJ0P7ixZtxxOudQWRWlm6ZgiUnT3-1O61538kqXckeM2RXwqGcYMDNNVmO/pub?output=csv"; 
+        
+        let dadosGlobais = []; 
+        let chartStatus, chartTipo, chartInstituto; 
+
+        Papa.parse(urlPlanilha, {
+            download: true,
+            header: true,
+            complete: function(resultados) {
+                dadosGlobais = resultados.data.filter(linha => linha["INSTITUTO"] && linha["INSTITUTO"].trim() !== "");
+                document.getElementById('dashboard').style.display = 'flex';
+                preencherOpcoesDosFiltros(dadosGlobais);
+                aplicarFiltros(); 
+            }
+        });
+
+        function preencherOpcoesDosFiltros(dados) {
+            let institutos = [...new Set(dados.map(d => d["INSTITUTO"].trim()))].sort();
+            let tipos = [...new Set(dados.map(d => d["TIPO"] ? d["TIPO"].trim() : "Não definido"))].sort();
+
+            let selectInst = document.getElementById("filtroInstituto");
+            institutos.forEach(inst => selectInst.innerHTML += `<option value="${inst}">${inst}</option>`);
+
+            let selectTipo = document.getElementById("filtroTipo");
+            tipos.forEach(tipo => selectTipo.innerHTML += `<option value="${tipo}">${tipo}</option>`);
+        }
+
+        function aplicarFiltros() {
+            let textoBusca = document.getElementById("busca").value.toLowerCase();
+            let instSelecionado = document.getElementById("filtroInstituto").value;
+            let tipoSelecionado = document.getElementById("filtroTipo").value;
+
+            let dadosFiltrados = dadosGlobais.filter(projeto => {
+                let nome = (projeto["NOME PROJETO"] || "").toLowerCase();
+                let resumo = (projeto["Resumo"] || "").toLowerCase();
+                let instituto = projeto["INSTITUTO"].trim();
+                let tipo = projeto["TIPO"] ? projeto["TIPO"].trim() : "Não definido";
+
+                let passaTexto = nome.includes(textoBusca) || resumo.includes(textoBusca);
+                let passaInst = instSelecionado === "" || instituto === instSelecionado;
+                let passaTipo = tipoSelecionado === "" || tipo === tipoSelecionado;
+
+                return passaTexto && passaInst && passaTipo;
+            });
+
+            gerarGraficos(dadosFiltrados);
+            mostrarProjetos(dadosFiltrados);
+        }
+
+        function gerarGraficos(dados) {
+            let contagemTipos = {};
+            let contagemInstitutos = {};
+            let contagemStatus = { "Com Projeto": 0, "Sem Projeto": 0 };
+
+            dados.forEach(linha => {
+                let tipo = linha["TIPO"] ? linha["TIPO"].trim() : "Não definido";
+                let instituto = linha["INSTITUTO"] ? linha["INSTITUTO"].trim() : "";
+
+                contagemTipos[tipo] = (contagemTipos[tipo] || 0) + 1;
+                contagemInstitutos[instituto] = (contagemInstitutos[instituto] || 0) + 1;
+
+                if (tipo.toUpperCase() === "SEM PROJETO") {
+                    contagemStatus["Sem Projeto"]++;
+                } else {
+                    contagemStatus["Com Projeto"]++;
+                }
+            });
+
+            if(chartStatus) chartStatus.destroy();
+            if(chartTipo) chartTipo.destroy();
+            if(chartInstituto) chartInstituto.destroy();
+
+            // Configuração para deixar os textos brancos/cinzas mais legíveis se necessário
+            Chart.defaults.font.family = "'Segoe UI', sans-serif";
+            Chart.defaults.color = '#333';
+
+            chartStatus = new Chart(document.getElementById('graficoStatus'), {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(contagemStatus),
+                    datasets: [{ data: Object.values(contagemStatus), backgroundColor: ['#2F9E41', '#E02041'] }]
+                },
+                options: { plugins: { title: { display: true, text: 'Campi Com vs Sem Projeto', font: {size: 16} } } }
+            });
+
+            chartTipo = new Chart(document.getElementById('graficoTipo'), {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(contagemTipos),
+                    datasets: [{ data: Object.values(contagemTipos), backgroundColor: ['#2980b9', '#f39c12', '#8e44ad', '#2c3e50', '#16a085'] }]
+                },
+                options: { plugins: { title: { display: true, text: 'Projetos por Categoria', font: {size: 16} } } }
+            });
+
+            chartInstituto = new Chart(document.getElementById('graficoInstituto'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(contagemInstitutos),
+                    datasets: [{ label: 'Qtd', data: Object.values(contagemInstitutos), backgroundColor: '#2F9E41' }]
+                },
+                options: { scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }, plugins: { title: { display: true, text: 'Registros por Local', font: {size: 16} }, legend: { display: false } } }
+            });
+        }
+
+        function mostrarProjetos(dados) {
+            const container = document.getElementById("projetos");
+            container.innerHTML = ""; 
+
+            if(dados.length === 0) {
+                container.innerHTML = "<h3 style='grid-column: 1 / -1; text-align: center; color: #7f8c8d;'>Nenhum projeto encontrado. Tente mudar os filtros.</h3>";
+                return;
+            }
+
+            dados.forEach(projeto => {
+                let instituto = projeto["INSTITUTO"];
+                let campus = projeto["CAMPUS"] || "";
+                let nome = projeto["NOME PROJETO"] || "Sem Título";
+                let tipo = projeto["TIPO"] || "Não definido";
+                let resumo = projeto["Resumo"] || "Sem resumo disponível.";
+                let link = projeto["REFERÊNCIA"] || "";
+
+                let classeTipo = tipo.toUpperCase() === "SEM PROJETO" ? "tipo sem-projeto" : "tipo";
+                let linkHTML = link ? `<a href="${link}" target="_blank" class="link">Acessar Referência ➔</a>` : "";
+
+                const cartaoHTML = `
+                    <div class="cartao">
+                        <div class="instituto">${instituto} ${campus ? '— ' + campus : ''}</div>
+                        <div class="titulo">${nome}</div>
+                        <div class="${classeTipo}">${tipo}</div>
+                        <div class="resumo">${resumo}</div>
+                        ${linkHTML}
+                    </div>
+                `;
+                container.innerHTML += cartaoHTML;
+            });
+        }
+    </script>
+</body>
+</html>
