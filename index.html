@@ -56,7 +56,12 @@
         const urlPlanilha = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS6uBzH5Hh75nEQ1hN2BfQJ0P7ixZtxxOudQWRWlm6ZgiUnT3-1O61538kqXckeM2RXwqGcYMDNNVmO/pub?output=csv"; 
         
         let dadosGlobais = []; 
+        let dadosFiltradosAtuais = []; // Guarda a lista que estamos vendo no momento
         let chartStatus, chartTipo, chartInstituto; 
+
+        // Configurações da Paginação
+        let paginaAtual = 1;
+        const itensPorPagina = 30; // Você pode mudar para 50 se preferir
 
         Papa.parse(urlPlanilha, {
             download: true,
@@ -85,7 +90,7 @@
             let instSelecionado = document.getElementById("filtroInstituto").value;
             let tipoSelecionado = document.getElementById("filtroTipo").value;
 
-            let dadosFiltrados = dadosGlobais.filter(projeto => {
+            dadosFiltradosAtuais = dadosGlobais.filter(projeto => {
                 let nome = (projeto["NOME PROJETO"] || "").toLowerCase();
                 let resumo = (projeto["Resumo"] || "").toLowerCase();
                 let instituto = projeto["INSTITUTO"].trim();
@@ -98,10 +103,75 @@
                 return passaTexto && passaInst && passaTipo;
             });
 
-            gerarGraficos(dadosFiltrados);
-            mostrarProjetos(dadosFiltrados);
+            // Sempre que pesquisar algo, volta para a página 1
+            paginaAtual = 1; 
+            
+            gerarGraficos(dadosFiltradosAtuais);
+            mostrarProjetosPaginados();
         }
 
+        function mudarPagina(direcao) {
+            paginaAtual += direcao;
+            mostrarProjetosPaginados();
+            // Faz a tela subir de volta para o topo da lista de projetos
+            document.getElementById("projetos").scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function mostrarProjetosPaginados() {
+            const container = document.getElementById("projetos");
+            
+            if(dadosFiltradosAtuais.length === 0) {
+                container.innerHTML = "<h3 style='grid-column: 1 / -1; text-align: center; color: #7f8c8d;'>Nenhum projeto encontrado com esses filtros.</h3>";
+                return;
+            }
+
+            // Calcula quais projetos devem aparecer na página atual
+            let inicio = (paginaAtual - 1) * itensPorPagina;
+            let fim = inicio + itensPorPagina;
+            let projetosDaPagina = dadosFiltradosAtuais.slice(inicio, fim);
+            let totalPaginas = Math.ceil(dadosFiltradosAtuais.length / itensPorPagina);
+
+            // Variável para juntar todo o HTML antes de jogar na tela (Isso evita que o celular trave!)
+            let htmlFinal = "";
+
+            projetosDaPagina.forEach(projeto => {
+                let instituto = projeto["INSTITUTO"];
+                let campus = projeto["CAMPUS"] || "";
+                let nome = projeto["NOME PROJETO"] || "Sem Título";
+                let tipo = projeto["TIPO"] || "Não definido";
+                let resumo = projeto["Resumo"] || "Sem resumo disponível.";
+                let link = projeto["REFERÊNCIA"] || "";
+
+                let classeTipo = tipo.toUpperCase() === "SEM PROJETO" ? "tipo sem-projeto" : "tipo";
+                let linkHTML = link ? `<a href="${link}" target="_blank" class="link">Acessar Referência ➔</a>` : "";
+
+                htmlFinal += `
+                    <div class="cartao">
+                        <div class="instituto">${instituto} ${campus ? '— ' + campus : ''}</div>
+                        <div class="titulo">${nome}</div>
+                        <div class="${classeTipo}">${tipo}</div>
+                        <div class="resumo">${resumo}</div>
+                        ${linkHTML}
+                    </div>
+                `;
+            });
+
+            // Adiciona os botões de paginação no final do HTML
+            htmlFinal += `
+                <div class="paginacao">
+                    <button class="btn-pagina" onclick="mudarPagina(-1)" ${paginaAtual === 1 ? 'disabled' : ''}>⬅ Anterior</button>
+                    <span id="info-pagina">Página ${paginaAtual} de ${totalPaginas}</span>
+                    <button class="btn-pagina" onclick="mudarPagina(1)" ${paginaAtual === totalPaginas ? 'disabled' : ''}>Próxima ➡</button>
+                </div>
+            `;
+
+            // Joga tudo na tela de uma vez só (super rápido)
+            container.innerHTML = htmlFinal;
+        }
+
+        // ==========================================
+        // FUNÇÃO DE GRÁFICOS (MANTIDA EXATAMENTE IGUAL)
+        // ==========================================
         function gerarGraficos(dados) {
             let contagemTipos = {};
             let contagemInstitutos = {};
@@ -110,10 +180,8 @@
             dados.forEach(linha => {
                 let tipo = linha["TIPO"] ? linha["TIPO"].trim() : "Não definido";
                 let instituto = linha["INSTITUTO"] ? linha["INSTITUTO"].trim() : "";
-
                 contagemTipos[tipo] = (contagemTipos[tipo] || 0) + 1;
                 contagemInstitutos[instituto] = (contagemInstitutos[instituto] || 0) + 1;
-
                 if (tipo.toUpperCase() === "SEM PROJETO") {
                     contagemStatus["Sem Projeto"]++;
                 } else {
@@ -125,68 +193,25 @@
             if(chartTipo) chartTipo.destroy();
             if(chartInstituto) chartInstituto.destroy();
 
-            // Configuração para deixar os textos brancos/cinzas mais legíveis se necessário
             Chart.defaults.font.family = "'Segoe UI', sans-serif";
             Chart.defaults.color = '#333';
 
             chartStatus = new Chart(document.getElementById('graficoStatus'), {
                 type: 'pie',
-                data: {
-                    labels: Object.keys(contagemStatus),
-                    datasets: [{ data: Object.values(contagemStatus), backgroundColor: ['#2F9E41', '#E02041'] }]
-                },
+                data: { labels: Object.keys(contagemStatus), datasets: [{ data: Object.values(contagemStatus), backgroundColor: ['#2F9E41', '#E02041'] }] },
                 options: { plugins: { title: { display: true, text: 'Campi Com vs Sem Projeto', font: {size: 16} } } }
             });
 
             chartTipo = new Chart(document.getElementById('graficoTipo'), {
                 type: 'doughnut',
-                data: {
-                    labels: Object.keys(contagemTipos),
-                    datasets: [{ data: Object.values(contagemTipos), backgroundColor: ['#2980b9', '#f39c12', '#8e44ad', '#2c3e50', '#16a085'] }]
-                },
+                data: { labels: Object.keys(contagemTipos), datasets: [{ data: Object.values(contagemTipos), backgroundColor: ['#2980b9', '#f39c12', '#8e44ad', '#2c3e50', '#16a085'] }] },
                 options: { plugins: { title: { display: true, text: 'Projetos por Categoria', font: {size: 16} } } }
             });
 
             chartInstituto = new Chart(document.getElementById('graficoInstituto'), {
                 type: 'bar',
-                data: {
-                    labels: Object.keys(contagemInstitutos),
-                    datasets: [{ label: 'Qtd', data: Object.values(contagemInstitutos), backgroundColor: '#2F9E41' }]
-                },
+                data: { labels: Object.keys(contagemInstitutos), datasets: [{ label: 'Qtd', data: Object.values(contagemInstitutos), backgroundColor: '#2F9E41' }] },
                 options: { scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }, plugins: { title: { display: true, text: 'Registros por Local', font: {size: 16} }, legend: { display: false } } }
-            });
-        }
-
-        function mostrarProjetos(dados) {
-            const container = document.getElementById("projetos");
-            container.innerHTML = ""; 
-
-            if(dados.length === 0) {
-                container.innerHTML = "<h3 style='grid-column: 1 / -1; text-align: center; color: #7f8c8d;'>Nenhum projeto encontrado. Tente mudar os filtros.</h3>";
-                return;
-            }
-
-            dados.forEach(projeto => {
-                let instituto = projeto["INSTITUTO"];
-                let campus = projeto["CAMPUS"] || "";
-                let nome = projeto["NOME PROJETO"] || "Sem Título";
-                let tipo = projeto["TIPO"] || "Não definido";
-                let resumo = projeto["Resumo"] || "Sem resumo disponível.";
-                let link = projeto["REFERÊNCIA"] || "";
-
-                let classeTipo = tipo.toUpperCase() === "SEM PROJETO" ? "tipo sem-projeto" : "tipo";
-                let linkHTML = link ? `<a href="${link}" target="_blank" class="link">Acessar Referência ➔</a>` : "";
-
-                const cartaoHTML = `
-                    <div class="cartao">
-                        <div class="instituto">${instituto} ${campus ? '— ' + campus : ''}</div>
-                        <div class="titulo">${nome}</div>
-                        <div class="${classeTipo}">${tipo}</div>
-                        <div class="resumo">${resumo}</div>
-                        ${linkHTML}
-                    </div>
-                `;
-                container.innerHTML += cartaoHTML;
             });
         }
     </script>
