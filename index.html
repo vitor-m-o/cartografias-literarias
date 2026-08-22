@@ -13,11 +13,20 @@
     <!-- CABEÇALHO OFICIAL (HERO SECTION) -->
     <header class="cabecalho-if">
         <div class="cabecalho-conteudo">
-            <!-- DICA: Coloque a imagem da logo do seu IF na mesma pasta e mude o 'src' abaixo para "logo.png" -->
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Instituto_Federal_de_Mato_Grosso_-_Marca_Vertical_2015.svg/120px-Instituto_Federal_de_Mato_Grosso_-_Marca_Vertical_2015.svg.png" alt="Logo Instituto Federal" class="logo-if" onerror="this.style.display='none'">
+            <img src="cartografias-literarias-logo.png" alt="Logo" class="logo-if">
+            <h1> Cartografias Literarias </h1>
+            <p>Mapeamento nacional de iniciativas voltadas ao incentivo à leitura.</p>
             
-            <h1>Catálogo de Projetos de Literatura</h1>
-            <p>Mapeamento nacional de iniciativas voltadas ao incentivo à leitura, ensino e cultura em nossa rede.</p>
+            <!-- Botões das Redes Sociais -->
+            <div class="redes-sociais">
+                <a href="SEU_LINK_DO_INSTAGRAM_AQUI" target="_blank" class="btn-social btn-insta">Perfil do Instagram</a>
+                <a href="https://discord.gg/9tzbybQR4N" target="_blank" class="btn-social btn-discord">Comunidade do Discord</a>
+            </div>
+
+            <!-- Galeria de Imagens do Projeto/Instituto -->
+            <div class="galeria-topo">
+                <img src="ifsul-logo.png" alt="Foto do Instituto">
+            </div>
         </div>
     </header>
 
@@ -56,12 +65,10 @@
         const urlPlanilha = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS6uBzH5Hh75nEQ1hN2BfQJ0P7ixZtxxOudQWRWlm6ZgiUnT3-1O61538kqXckeM2RXwqGcYMDNNVmO/pub?output=csv"; 
         
         let dadosGlobais = []; 
-        let dadosFiltradosAtuais = []; // Guarda a lista que estamos vendo no momento
+        let dadosFiltradosAtuais = []; 
         let chartStatus, chartTipo, chartInstituto; 
-
-        // Configurações da Paginação
         let paginaAtual = 1;
-        const itensPorPagina = 30; // Você pode mudar para 50 se preferir
+        const itensPorPagina = 30; 
 
         Papa.parse(urlPlanilha, {
             download: true,
@@ -76,13 +83,21 @@
 
         function preencherOpcoesDosFiltros(dados) {
             let institutos = [...new Set(dados.map(d => d["INSTITUTO"].trim()))].sort();
-            let tipos = [...new Set(dados.map(d => d["TIPO"] ? d["TIPO"].trim() : "Não definido"))].sort();
+            
+            // Separa os tipos por vírgula para listar apenas os tópicos puros
+            let todosOsTipos = [];
+            dados.forEach(d => {
+                let tipoBruto = d["TIPO"] ? d["TIPO"].trim() : "Não definido";
+                let tiposSeparados = tipoBruto.split(',').map(t => t.trim());
+                todosOsTipos.push(...tiposSeparados);
+            });
+            let tiposUnicos = [...new Set(todosOsTipos)].sort();
 
             let selectInst = document.getElementById("filtroInstituto");
             institutos.forEach(inst => selectInst.innerHTML += `<option value="${inst}">${inst}</option>`);
 
             let selectTipo = document.getElementById("filtroTipo");
-            tipos.forEach(tipo => selectTipo.innerHTML += `<option value="${tipo}">${tipo}</option>`);
+            tiposUnicos.forEach(tipo => selectTipo.innerHTML += `<option value="${tipo}">${tipo}</option>`);
         }
 
         function aplicarFiltros() {
@@ -94,18 +109,19 @@
                 let nome = (projeto["NOME PROJETO"] || "").toLowerCase();
                 let resumo = (projeto["Resumo"] || "").toLowerCase();
                 let instituto = projeto["INSTITUTO"].trim();
-                let tipo = projeto["TIPO"] ? projeto["TIPO"].trim() : "Não definido";
+                
+                let tipoBruto = projeto["TIPO"] ? projeto["TIPO"].trim() : "Não definido";
+                let tiposSeparados = tipoBruto.split(',').map(t => t.trim()); // Quebra em lista
 
                 let passaTexto = nome.includes(textoBusca) || resumo.includes(textoBusca);
                 let passaInst = instSelecionado === "" || instituto === instSelecionado;
-                let passaTipo = tipoSelecionado === "" || tipo === tipoSelecionado;
+                // Verifica se a lista de tipos do projeto contém o tipo selecionado no filtro
+                let passaTipo = tipoSelecionado === "" || tiposSeparados.includes(tipoSelecionado);
 
                 return passaTexto && passaInst && passaTipo;
             });
 
-            // Sempre que pesquisar algo, volta para a página 1
             paginaAtual = 1; 
-            
             gerarGraficos(dadosFiltradosAtuais);
             mostrarProjetosPaginados();
         }
@@ -113,7 +129,6 @@
         function mudarPagina(direcao) {
             paginaAtual += direcao;
             mostrarProjetosPaginados();
-            // Faz a tela subir de volta para o topo da lista de projetos
             document.getElementById("projetos").scrollIntoView({ behavior: 'smooth' });
         }
 
@@ -121,68 +136,102 @@
             const container = document.getElementById("projetos");
             
             if(dadosFiltradosAtuais.length === 0) {
-                container.innerHTML = "<h3 style='grid-column: 1 / -1; text-align: center; color: #7f8c8d;'>Nenhum projeto encontrado com esses filtros.</h3>";
+                container.innerHTML = "<h3 style='grid-column: 1 / -1; text-align: center; color: #7f8c8d;'>Nenhum projeto encontrado.</h3>";
                 return;
             }
 
-            // Calcula quais projetos devem aparecer na página atual
             let inicio = (paginaAtual - 1) * itensPorPagina;
             let fim = inicio + itensPorPagina;
             let projetosDaPagina = dadosFiltradosAtuais.slice(inicio, fim);
             let totalPaginas = Math.ceil(dadosFiltradosAtuais.length / itensPorPagina);
 
-            // Variável para juntar todo o HTML antes de jogar na tela (Isso evita que o celular trave!)
             let htmlFinal = "";
 
+            // 1. DESENHA OS CARTÕES (Dentro do loop)
             projetosDaPagina.forEach(projeto => {
                 let instituto = projeto["INSTITUTO"];
                 let campus = projeto["CAMPUS"] || "";
-                let nome = projeto["NOME PROJETO"] || "Sem Título";
-                let tipo = projeto["TIPO"] || "Não definido";
+                let nomeRaw = projeto["NOME PROJETO"] ? projeto["NOME PROJETO"].trim() : "";
                 let resumo = projeto["Resumo"] || "Sem resumo disponível.";
                 let link = projeto["REFERÊNCIA"] || "";
 
-                let classeTipo = tipo.toUpperCase() === "SEM PROJETO" ? "tipo sem-projeto" : "tipo";
-                let linkHTML = link ? `<a href="${link}" target="_blank" class="link">Acessar Referência ➔</a>` : "";
+                let tipoBruto = projeto["TIPO"] ? projeto["TIPO"].trim() : "Não definido";
+                let tiposSeparados = tipoBruto.split(',').map(t => t.trim()).filter(t => t !== ""); 
+                
+                let tagsHTML = "";
+                
+                if (tiposSeparados.length === 0) {
+                    tagsHTML = `<div class="tipo">Não definido</div>`;
+                } else {
+                    tiposSeparados.forEach(tag => {
+                        let classeTipo = tag.toUpperCase().includes("SEM PROJETO") ? "tipo sem-projeto" : "tipo";
+                        tagsHTML += `<div class="${classeTipo}">${tag}</div>`;
+                    });
+                }
 
+                let linkHTML = link ? `<a href="${link}" target="_blank" class="link">Acessar Referência ➔</a>` : "";
+                let tituloHTML = nomeRaw ? `<div class="titulo">${nomeRaw}</div>` : "";
+
+                // Adiciona o HTML do cartão à nossa variável final
                 htmlFinal += `
                     <div class="cartao">
                         <div class="instituto">${instituto} ${campus ? '— ' + campus : ''}</div>
-                        <div class="titulo">${nome}</div>
-                        <div class="${classeTipo}">${tipo}</div>
+                        ${tituloHTML}
+                        <div class="tags-container">
+                            ${tagsHTML}
+                        </div>
                         <div class="resumo">${resumo}</div>
                         ${linkHTML}
                     </div>
                 `;
             });
 
-            // Adiciona os botões de paginação no final do HTML
+            // 2. DESENHA A PAGINAÇÃO (Fora do loop, no final de tudo)
             htmlFinal += `
                 <div class="paginacao">
-                    <button class="btn-pagina" onclick="mudarPagina(-1)" ${paginaAtual === 1 ? 'disabled' : ''}>⬅ Anterior</button>
-                    <span id="info-pagina">Página ${paginaAtual} de ${totalPaginas}</span>
-                    <button class="btn-pagina" onclick="mudarPagina(1)" ${paginaAtual === totalPaginas ? 'disabled' : ''}>Próxima ➡</button>
+                    <button class="btn-pagina" onclick="mudarPagina(-1)" ${paginaAtual === 1 ? 'disabled' : ''}>⬅</button>
+                    <span id="info-pagina">
+                        Pág <input type="number" id="input-pagina" value="${paginaAtual}" min="1" max="${totalPaginas}" onchange="irParaPagina(this.value, ${totalPaginas})"> de ${totalPaginas}
+                    </span>
+                    <button class="btn-pagina" onclick="mudarPagina(1)" ${paginaAtual === totalPaginas ? 'disabled' : ''}>➡</button>
                 </div>
             `;
-
-            // Joga tudo na tela de uma vez só (super rápido)
+            
+            // 3. JOGA NA TELA
             container.innerHTML = htmlFinal;
         }
 
-        // ==========================================
-        // FUNÇÃO DE GRÁFICOS (MANTIDA EXATAMENTE IGUAL)
-        // ==========================================
+        // NOVA FUNÇÃO: Pula direto para a página digitada
+        function irParaPagina(valor, maximo) {
+            let novaPagina = parseInt(valor);
+            if (novaPagina >= 1 && novaPagina <= maximo) {
+                paginaAtual = novaPagina;
+                mostrarProjetosPaginados();
+                document.getElementById("projetos").scrollIntoView({ behavior: 'smooth' });
+            } else {
+                alert("Página inválida!");
+                mostrarProjetosPaginados(); // Reseta o input caso digite errado
+            }
+        }
+
         function gerarGraficos(dados) {
             let contagemTipos = {};
             let contagemInstitutos = {};
             let contagemStatus = { "Com Projeto": 0, "Sem Projeto": 0 };
 
             dados.forEach(linha => {
-                let tipo = linha["TIPO"] ? linha["TIPO"].trim() : "Não definido";
+                let tipoBruto = linha["TIPO"] ? linha["TIPO"].trim() : "Não definido";
                 let instituto = linha["INSTITUTO"] ? linha["INSTITUTO"].trim() : "";
-                contagemTipos[tipo] = (contagemTipos[tipo] || 0) + 1;
+                
+                // Adiciona +1 para cada tópico isolado encontrado na célula
+                let tiposSeparados = tipoBruto.split(',').map(t => t.trim());
+                tiposSeparados.forEach(t => {
+                    if (t) contagemTipos[t] = (contagemTipos[t] || 0) + 1;
+                });
+
                 contagemInstitutos[instituto] = (contagemInstitutos[instituto] || 0) + 1;
-                if (tipo.toUpperCase() === "SEM PROJETO") {
+                
+                if (tipoBruto.toUpperCase().includes("SEM PROJETO")) {
                     contagemStatus["Sem Projeto"]++;
                 } else {
                     contagemStatus["Com Projeto"]++;
@@ -204,7 +253,7 @@
 
             chartTipo = new Chart(document.getElementById('graficoTipo'), {
                 type: 'doughnut',
-                data: { labels: Object.keys(contagemTipos), datasets: [{ data: Object.values(contagemTipos), backgroundColor: ['#2980b9', '#f39c12', '#8e44ad', '#2c3e50', '#16a085'] }] },
+                data: { labels: Object.keys(contagemTipos), datasets: [{ data: Object.values(contagemTipos), backgroundColor: ['#2980b9', '#f39c12', '#8e44ad', '#2c3e50', '#16a085', '#d35400', '#27ae60'] }] },
                 options: { plugins: { title: { display: true, text: 'Projetos por Categoria', font: {size: 16} } } }
             });
 
