@@ -19,7 +19,7 @@
             
             <!-- Botões das Redes Sociais -->
             <div class="redes-sociais">
-                <a href="SEU_LINK_DO_INSTAGRAM_AQUI" target="_blank" class="btn-social btn-insta">Perfil do Instagram</a>
+                <a href="https://www.instagram.com/cartografiasliterariascmq/" target="_blank" class="btn-social btn-insta">Perfil do Instagram</a>
                 <a href="https://discord.gg/9tzbybQR4N" target="_blank" class="btn-social btn-discord">Comunidade do Discord</a>
             </div>
 
@@ -70,6 +70,21 @@
         let paginaAtual = 1;
         const itensPorPagina = 30; 
 
+        // ==========================================
+        // NOVA FUNÇÃO: Formata o texto (EXEMPLO -> Exemplo)
+        // ==========================================
+        function formatarTextoBonito(texto) {
+            if (!texto) return "Não definido";
+            
+            // Transforma tudo em minúsculo e corta os espaços sobrando
+            let textoMinusculo = texto.trim().toLowerCase();
+            
+            // Separa as palavras e coloca a primeira letra de cada uma em maiúsculo
+            return textoMinusculo.split(' ').map(palavra => {
+                return palavra.charAt(0).toUpperCase() + palavra.slice(1);
+            }).join(' ');
+        }
+
         Papa.parse(urlPlanilha, {
             download: true,
             header: true,
@@ -84,11 +99,11 @@
         function preencherOpcoesDosFiltros(dados) {
             let institutos = [...new Set(dados.map(d => d["INSTITUTO"].trim()))].sort();
             
-            // Separa os tipos por vírgula para listar apenas os tópicos puros
             let todosOsTipos = [];
             dados.forEach(d => {
                 let tipoBruto = d["TIPO"] ? d["TIPO"].trim() : "Não definido";
-                let tiposSeparados = tipoBruto.split(',').map(t => t.trim());
+                // Aplica a formatação na hora de ler os tipos da planilha
+                let tiposSeparados = tipoBruto.split(',').map(t => formatarTextoBonito(t)).filter(t => t !== "");
                 todosOsTipos.push(...tiposSeparados);
             });
             let tiposUnicos = [...new Set(todosOsTipos)].sort();
@@ -111,11 +126,11 @@
                 let instituto = projeto["INSTITUTO"].trim();
                 
                 let tipoBruto = projeto["TIPO"] ? projeto["TIPO"].trim() : "Não definido";
-                let tiposSeparados = tipoBruto.split(',').map(t => t.trim()); // Quebra em lista
+                // Aplica a formatação na busca também
+                let tiposSeparados = tipoBruto.split(',').map(t => formatarTextoBonito(t)).filter(t => t !== ""); 
 
                 let passaTexto = nome.includes(textoBusca) || resumo.includes(textoBusca);
                 let passaInst = instSelecionado === "" || instituto === instSelecionado;
-                // Verifica se a lista de tipos do projeto contém o tipo selecionado no filtro
                 let passaTipo = tipoSelecionado === "" || tiposSeparados.includes(tipoSelecionado);
 
                 return passaTexto && passaInst && passaTipo;
@@ -124,12 +139,6 @@
             paginaAtual = 1; 
             gerarGraficos(dadosFiltradosAtuais);
             mostrarProjetosPaginados();
-        }
-
-        function mudarPagina(direcao) {
-            paginaAtual += direcao;
-            mostrarProjetosPaginados();
-            document.getElementById("projetos").scrollIntoView({ behavior: 'smooth' });
         }
 
         function mostrarProjetosPaginados() {
@@ -147,7 +156,6 @@
 
             let htmlFinal = "";
 
-            // 1. DESENHA OS CARTÕES (Dentro do loop)
             projetosDaPagina.forEach(projeto => {
                 let instituto = projeto["INSTITUTO"];
                 let campus = projeto["CAMPUS"] || "";
@@ -156,7 +164,8 @@
                 let link = projeto["REFERÊNCIA"] || "";
 
                 let tipoBruto = projeto["TIPO"] ? projeto["TIPO"].trim() : "Não definido";
-                let tiposSeparados = tipoBruto.split(',').map(t => t.trim()).filter(t => t !== ""); 
+                // Aplica a formatação nos selos dos cartões
+                let tiposSeparados = tipoBruto.split(',').map(t => formatarTextoBonito(t)).filter(t => t !== ""); 
                 
                 let tagsHTML = "";
                 
@@ -172,7 +181,6 @@
                 let linkHTML = link ? `<a href="${link}" target="_blank" class="link">Acessar Referência ➔</a>` : "";
                 let tituloHTML = nomeRaw ? `<div class="titulo">${nomeRaw}</div>` : "";
 
-                // Adiciona o HTML do cartão à nossa variável final
                 htmlFinal += `
                     <div class="cartao">
                         <div class="instituto">${instituto} ${campus ? '— ' + campus : ''}</div>
@@ -186,7 +194,6 @@
                 `;
             });
 
-            // 2. DESENHA A PAGINAÇÃO (Fora do loop, no final de tudo)
             htmlFinal += `
                 <div class="paginacao">
                     <button class="btn-pagina" onclick="mudarPagina(-1)" ${paginaAtual === 1 ? 'disabled' : ''}>⬅</button>
@@ -197,11 +204,15 @@
                 </div>
             `;
             
-            // 3. JOGA NA TELA
             container.innerHTML = htmlFinal;
         }
 
-        // NOVA FUNÇÃO: Pula direto para a página digitada
+        function mudarPagina(direcao) {
+            paginaAtual += direcao;
+            mostrarProjetosPaginados();
+            document.getElementById("projetos").scrollIntoView({ behavior: 'smooth' });
+        }
+
         function irParaPagina(valor, maximo) {
             let novaPagina = parseInt(valor);
             if (novaPagina >= 1 && novaPagina <= maximo) {
@@ -210,7 +221,7 @@
                 document.getElementById("projetos").scrollIntoView({ behavior: 'smooth' });
             } else {
                 alert("Página inválida!");
-                mostrarProjetosPaginados(); // Reseta o input caso digite errado
+                mostrarProjetosPaginados(); 
             }
         }
 
@@ -223,10 +234,11 @@
                 let tipoBruto = linha["TIPO"] ? linha["TIPO"].trim() : "Não definido";
                 let instituto = linha["INSTITUTO"] ? linha["INSTITUTO"].trim() : "";
                 
-                // Adiciona +1 para cada tópico isolado encontrado na célula
-                let tiposSeparados = tipoBruto.split(',').map(t => t.trim());
+                // Aplica a formatação no gráfico de pizza
+                let tiposSeparados = tipoBruto.split(',').map(t => formatarTextoBonito(t)).filter(t => t !== "");
+                
                 tiposSeparados.forEach(t => {
-                    if (t) contagemTipos[t] = (contagemTipos[t] || 0) + 1;
+                    contagemTipos[t] = (contagemTipos[t] || 0) + 1;
                 });
 
                 contagemInstitutos[instituto] = (contagemInstitutos[instituto] || 0) + 1;
