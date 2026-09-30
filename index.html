@@ -1,280 +1,4003 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo de Projetos de Literatura - IF</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Cartografias Literárias - IF</title>
+
+
+    <!-- CSS DO SITE -->
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+
+    <!-- PAPAPARSE -->
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js">
+    </script>
+
+
+    <!-- CHART.JS -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js">
+    </script>
+
+
+    <!-- LEAFLET -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
+
+
+    <!-- LEAFLET MARKER CLUSTER -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"
+    >
+
+    <script
+        src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js">
+    </script>
+
 </head>
+
+
 <body>
 
-    <!-- CABEÇALHO OFICIAL (HERO SECTION) -->
+
+    <!-- =====================================================
+         CABEÇALHO
+    ====================================================== -->
+
     <header class="cabecalho-if">
+
         <div class="cabecalho-conteudo">
-            <img src="cartografias-literarias-logo.png" alt="Logo" class="logo-if">
-            <h1> Cartografias Literarias </h1>
-            <p>Mapeamento nacional de iniciativas voltadas ao incentivo à leitura.</p>
-            
-            <!-- Botões das Redes Sociais -->
+
+            <img
+                src="cartografias-literarias-logo.png"
+                alt="Logo Cartografias Literárias"
+                class="logo-if"
+            >
+
+
+            <h1>
+                Cartografias Literárias
+            </h1>
+
+
+            <p>
+                Mapeamento nacional de iniciativas voltadas ao incentivo à leitura.
+            </p>
+
+
             <div class="redes-sociais">
-                <a href="https://www.instagram.com/cartografiasliterariascmq/" target="_blank" class="btn-social btn-insta">Perfil do Instagram</a>
-                <a href="https://discord.gg/9tzbybQR4N" target="_blank" class="btn-social btn-discord">Comunidade do Discord</a>
+
+                <a
+                    href="https://www.instagram.com/cartografiasliterariascmq/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="btn-social btn-insta"
+                >
+                    Instagram
+                </a>
+
+
+                <a
+                    href="mailto:cartografiasliterariascmq@gmail.com"
+                    class="btn-social btn-email"
+                >
+                    Contate-nos por E-mail
+                </a>
+
             </div>
 
-            <!-- Galeria de Imagens do Projeto/Instituto -->
+
             <div class="galeria-topo">
-                <img src="ifsul-logo.png" alt="Foto do Instituto">
+
+                <img
+                    src="ifsul-logo.png"
+                    alt="Instituto Federal"
+                >
+
             </div>
+
         </div>
+
     </header>
 
-    <!-- SESSÃO 1: RESUMO DOS DADOS (GRÁFICOS) -->
-    <section class="sessao">
-        <h2 class="titulo-sessao">Visão Geral dos Dados</h2>
-        <div class="dashboard" id="dashboard" style="display: none;">
-            <div class="grafico-container"><canvas id="graficoStatus"></canvas></div>
-            <div class="grafico-container"><canvas id="graficoTipo"></canvas></div>
-            <div class="grafico-container"><canvas id="graficoInstituto"></canvas></div>
+
+
+    <!-- =====================================================
+         MAPA
+    ====================================================== -->
+
+    <section class="mapa-secao">
+
+        <div class="mapa-cabecalho">
+
+            <div>
+
+                <span class="eyebrow">
+                    LOCALIZAÇÃO
+                </span>
+
+
+                <h2>
+                    Nossas Unidades no Mapa
+                </h2>
+
+
+                <p>
+                    Explore os campi participantes e clique em um marcador
+                    para filtrar os projetos daquele local.
+                </p>
+
+            </div>
+
+
+           <div class="contador-mapa">
+
+                <strong id="quantidadeCampiMapa">
+                    0
+                </strong>
+
+                <span>
+                    campi na planilha
+                </span>
+
+                <div
+                    id="statusQuantidadeCampi"
+                    class="status-quantidade-campi"
+                >
+                    Verificando...
+                </div>
+
+            </div>
+
         </div>
+
+
+        <div id="mapa"></div>
+
+
+        <div
+            id="statusMapa"
+            class="status-mapa"
+        >
+            Carregando mapa...
+        </div>
+
+        <div
+            id="campiSemCoordenadas"
+            class="campi-sem-coordenadas"
+            style="display: none;"
+        ></div>
+
+
+        <div class="creditos-mapa">
+
+            Mapas © OpenStreetMap contributors ·
+            Coordenadas municipais utilizadas para localização dos campi
+
+        </div>
+
     </section>
 
-    <!-- SESSÃO 2: PESQUISA E LISTA DE PROJETOS -->
+
+
+    <!-- =====================================================
+         VISÃO GERAL
+    ====================================================== -->
+
     <section class="sessao">
-        <h2 class="titulo-sessao">Explorar Projetos</h2>
-        
-        <!-- A barra de pesquisa agora fica colada nos projetos -->
+
+
+        <div class="titulo-area">
+
+            <span class="eyebrow">
+                DADOS
+            </span>
+
+
+            <h2 class="titulo-sessao">
+                Visão Geral
+            </h2>
+
+
+            <p>
+                Uma visão resumida das iniciativas encontradas na base.
+            </p>
+
+        </div>
+
+
+
+        <div
+            class="dashboard"
+            id="dashboard"
+            style="display: none;"
+        >
+
+
+            <!-- =============================
+                 GRÁFICO 1
+            ============================== -->
+
+            <div class="grafico-container">
+
+                <div class="grafico-cabecalho">
+
+                    <span class="grafico-numero">
+                        01
+                    </span>
+
+
+                    <div>
+
+                        <h3>
+                            Situação dos registros
+                        </h3>
+
+                        <span>
+                            Com projeto x sem projeto
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="canvas-wrapper">
+
+                    <canvas
+                        id="graficoStatus">
+                    </canvas>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =============================
+                 GRÁFICO 2
+            ============================== -->
+
+            <div class="grafico-container">
+
+                <div class="grafico-cabecalho">
+
+                    <span class="grafico-numero">
+                        02
+                    </span>
+
+
+                    <div>
+
+                        <h3>
+                            Categorias
+                        </h3>
+
+                        <span>
+                            Distribuição dos tipos de iniciativa
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="canvas-wrapper">
+
+                    <canvas
+                        id="graficoTipo">
+                    </canvas>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =============================
+                 GRÁFICO 3
+            ============================== -->
+
+            <div class="grafico-container grafico-largo">
+
+                <div class="grafico-cabecalho">
+
+                    <span class="grafico-numero">
+                        03
+                    </span>
+
+
+                    <div>
+
+                        <h3>
+                            Campi com mais registros
+                        </h3>
+
+                        <span>
+                            Os 12 locais com maior quantidade
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="canvas-wrapper canvas-barra">
+
+                    <canvas
+                        id="graficoCampus">
+                    </canvas>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =============================
+                 GRÁFICO 4
+            ============================== -->
+
+            <div class="grafico-container grafico-largo">
+
+                <div class="grafico-cabecalho">
+
+                    <span class="grafico-numero">
+                        04
+                    </span>
+
+
+                    <div>
+
+                        <h3>
+                            Referências cadastradas
+                        </h3>
+
+                        <span>
+                            Registros com e sem fonte
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="canvas-wrapper">
+
+                    <canvas
+                        id="graficoReferencia">
+                    </canvas>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         PROJETOS
+    ====================================================== -->
+
+    <section class="sessao">
+
+
+        <div class="titulo-area">
+
+            <span class="eyebrow">
+                EXPLORAR
+            </span>
+
+
+            <h2 class="titulo-sessao">
+                Projetos e Iniciativas
+            </h2>
+
+
+            <p>
+                Pesquise por nome, campus, instituto ou categoria.
+            </p>
+
+        </div>
+
+
+
+        <!-- =============================
+             FILTROS
+        ============================== -->
+
         <div class="filtros-container">
-            <input type="text" id="busca" placeholder="🔍 Pesquisar por nome ou palavra-chave no resumo..." oninput="aplicarFiltros()">
-            
-            <select id="filtroInstituto" onchange="aplicarFiltros()">
-                <option value="">🏫 Todos os Institutos / Locais</option>
-            </select>
 
-            <select id="filtroTipo" onchange="aplicarFiltros()">
-                <option value="">📂 Todos os Tipos</option>
-            </select>
+
+            <div class="campo-busca">
+
+                <label for="busca">
+                    Pesquisa
+                </label>
+
+
+                <input
+                    type="text"
+                    id="busca"
+                    placeholder="Pesquisar por nome, campus ou palavra-chave..."
+                    oninput="aplicarFiltros()"
+                >
+
+            </div>
+
+
+
+            <div class="campo-filtro">
+
+                <label for="filtroInstituto">
+                    Instituto / Local
+                </label>
+
+
+                <select
+                    id="filtroInstituto"
+                    onchange="aplicarFiltros()"
+                >
+
+                    <option value="">
+                        Todos os Institutos / Locais
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <div class="campo-filtro">
+
+                <label for="filtroTipo">
+                    Categoria
+                </label>
+
+
+                <select
+                    id="filtroTipo"
+                    onchange="aplicarFiltros()"
+                >
+
+                    <option value="">
+                        Todos os Tipos
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <button
+                id="btnLimparFiltros"
+                onclick="limparFiltros()"
+            >
+                Limpar filtros
+            </button>
+
+
         </div>
 
-        <div id="projetos">Carregando dados da planilha do Google...</div>
+
+
+        <div
+            id="resumoResultados"
+            class="resumo-resultados"
+        >
+            Carregando dados...
+        </div>
+
+
+
+        <div id="projetos">
+
+            Carregando dados da planilha do Google...
+
+        </div>
+
+
     </section>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
 
     <script>
-        // === COLOQUE O SEU LINK AQUI ===
-        const urlPlanilha = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS6uBzH5Hh75nEQ1hN2BfQJ0P7ixZtxxOudQWRWlm6ZgiUnT3-1O61538kqXckeM2RXwqGcYMDNNVmO/pub?output=csv"; 
-        
-        let dadosGlobais = []; 
-        let dadosFiltradosAtuais = []; 
-        let chartStatus, chartTipo, chartInstituto; 
+
+
+        /* ==================================================
+           PLANILHA
+        ================================================== */
+
+        const urlPlanilha =
+            "https://docs.google.com/spreadsheets/d/e/2PACX-1vS6uBzH5Hh75nEQ1hN2BfQJ0P7ixZtxxOudQWRWlm6ZgiUnT3-1O61538kqXckeM2RXwqGcYMDNNVmO/pub?output=csv";
+
+
+
+        /* ==================================================
+           BASE DE MUNICÍPIOS
+        ================================================== */
+
+        const urlMunicipios =
+            "https://raw.githubusercontent.com/kelvins/municipios-brasileiros/main/json/municipios.json";
+
+
+
+        /* ==================================================
+           VARIÁVEIS
+        ================================================== */
+
+        let dadosGlobais = [];
+
+        let dadosFiltradosAtuais = [];
+
         let paginaAtual = 1;
-        const itensPorPagina = 30; 
 
-        // ==========================================
-        // NOVA FUNÇÃO: Formata o texto (EXEMPLO -> Exemplo)
-        // ==========================================
-        function formatarTextoBonito(texto) {
-            if (!texto) return "Não definido";
-            
-            // Transforma tudo em minúsculo e corta os espaços sobrando
-            let textoMinusculo = texto.trim().toLowerCase();
-            
-            // Separa as palavras e coloca a primeira letra de cada uma em maiúsculo
-            return textoMinusculo.split(' ').map(palavra => {
-                return palavra.charAt(0).toUpperCase() + palavra.slice(1);
-            }).join(' ');
-        }
+        const itensPorPagina = 30;
 
-        Papa.parse(urlPlanilha, {
-            download: true,
-            header: true,
-            complete: function(resultados) {
-                dadosGlobais = resultados.data.filter(linha => linha["INSTITUTO"] && linha["INSTITUTO"].trim() !== "");
-                document.getElementById('dashboard').style.display = 'flex';
-                preencherOpcoesDosFiltros(dadosGlobais);
-                aplicarFiltros(); 
+
+        /* GRÁFICOS */
+
+        let chartStatus = null;
+        let chartTipo = null;
+        let chartCampus = null;
+        let chartReferencia = null;
+
+
+        /* MAPA */
+
+        let mapaLeaflet = null;
+
+        let camadasMarcadores = null;
+
+
+        /* MUNICÍPIOS */
+
+        let municipiosBrasil = [];
+
+        let municipiosOrdenados = [];
+
+
+
+        /* ==================================================
+           CONTADORES DO MAPA
+        ================================================== */
+
+        let locaisComCoordenadas = 0;
+
+        let locaisSemCoordenadas = 0;
+
+
+
+        /* ==================================================
+           COORDENADAS MANUAIS
+           
+           Elas têm prioridade quando conhecemos
+           o campus diretamente.
+        ================================================== */
+
+        const coordenadasCampi = {
+
+
+            /* IFSUL */
+
+            "camaqua":
+                [-30.8507, -51.8118],
+
+            "pelotas":
+                [-31.7654, -52.3376],
+
+            "visconde da graca":
+                [-31.7225, -52.3489],
+
+            "cavg":
+                [-31.7225, -52.3489],
+
+            "santa maria":
+                [-29.6842, -53.8069],
+
+            "passo fundo":
+                [-28.2628, -52.4067],
+
+            "alegrete":
+                [-29.7842, -55.7919],
+
+            "bage":
+                [-31.3283, -54.1069],
+
+            "sapucaia do sul":
+                [-29.8338, -51.1442],
+
+            "venancio aires":
+                [-29.6083, -52.1931],
+
+            "lajeado":
+                [-29.4671, -51.9614],
+
+            "sant'ana do livramento":
+                [-30.8931, -55.5328],
+
+            "santana do livramento":
+                [-30.8931, -55.5328],
+
+            "charqueadas":
+                [-29.9556, -51.6253],
+
+            "jaguarao":
+                [-32.5658, -53.3761],
+
+            "gravatai":
+                [-29.9439, -50.9922],
+
+            "novo hamburgo":
+                [-29.6889, -51.1317],
+
+
+
+            /* IFRS */
+
+            "bento goncalves":
+                [-29.1629, -51.5186],
+
+            "canoas":
+                [-29.9133, -51.1844],
+
+            "caxias do sul":
+                [-29.1678, -51.1794],
+
+            "erechim":
+                [-27.6342, -52.2739],
+
+            "farroupilha":
+                [-29.2289, -51.3475],
+
+            "feliz":
+                [-29.4533, -51.3061],
+
+            "ibiruba":
+                [-28.6275, -53.0903],
+
+            "osorio":
+                [-29.8883, -50.2694],
+
+            "porto alegre":
+                [-30.0346, -51.2177],
+
+            "restinga":
+                [-30.1511, -51.1419],
+
+            "rio grande":
+                [-32.0350, -52.0986],
+
+            "rolante":
+                [-29.6508, -50.5764],
+
+            "alvorada":
+                [-29.9986, -51.0828],
+
+            "viamao":
+                [-30.0811, -51.0233],
+
+            "vacaria":
+                [-28.5117, -50.9339],
+
+
+
+            /* IFFAR */
+
+            "sertao":
+                [-28.0478, -52.2575],
+
+            "frederico westphalen":
+                [-27.3592, -53.3967],
+
+            "jaguari":
+                [-29.4961, -54.6897],
+
+            "julio de castilhos":
+                [-29.2272, -53.6814],
+
+            "panambi":
+                [-28.2344, -53.5019],
+
+            "santa rosa":
+                [-27.8719, -54.4811],
+
+            "sao borja":
+                [-28.6606, -56.0044],
+
+            "sao vicente do sul":
+                [-29.6917, -54.6789],
+
+            "santo angelo":
+                [-28.2992, -54.2631],
+
+            "santo augusto":
+                [-27.8508, -53.7778],
+
+            "uruguaiana":
+                [-29.7547, -57.0883],
+
+
+
+            /* DISTRITO FEDERAL */
+
+            "brasilia":
+                [-15.7801, -47.9292],
+
+            "samambaia":
+                [-15.8778, -48.0844],
+
+            "riacho fundo":
+                [-15.8824, -48.0163],
+
+            "recanto das emas":
+                [-15.9083, -48.0642],
+
+            "estrutural":
+                [-15.7820, -47.9860],
+
+            "sao sebastiao":
+                [-15.9080, -47.7710],
+
+            "gama":
+                [-16.0125, -48.0620],
+
+            "ceilandia":
+                [-15.8190, -48.1120],
+
+            "planaltina":
+                [-15.6320, -47.6490],
+
+            "taguatinga":
+                [-15.8340, -48.0560],
+
+
+
+            /* MATO GROSSO DO SUL */
+
+            "nova andradina":
+                [-22.2392, -53.3428],
+
+            "navirai":
+                [-23.0645, -54.1983],
+
+            "campo grande":
+                [-20.4697, -54.6201],
+
+            "aquidauana":
+                [-20.4711, -55.7872],
+
+            "tres lagoas":
+                [-20.7849, -51.7007],
+
+            "jardim":
+                [-21.4800, -56.1380],
+
+            "ponta pora":
+                [-22.5360, -55.7256],
+
+            "coxim":
+                [-18.5067, -54.7600],
+
+            "corumba":
+                [-19.0089, -57.6528],
+
+            "dourados":
+                [-22.2231, -54.8072],
+
+            /* IFS - Sergipe */
+            "ifs": [-10.9472, -37.0731],
+
+            /* IFAM - Reitoria / Manaus */
+            "ifam": [-3.1190, -60.0217],
+
+            /* IFPA - Reitoria / Belém */
+            "ifpa": [-1.4558, -48.5039],
+
+            /* IFRO - Reitoria / Porto Velho */
+            "ifro": [-8.7612, -63.9004],
+
+            /* IFRO - Ariquemes */
+            "ifro — arquimenes": [-9.9133, -63.0408],
+            "ifro - arquimenes": [-9.9133, -63.0408],
+            "ifro — ariquemes": [-9.9133, -63.0408],
+            "ifro - ariquemes": [-9.9133, -63.0408],
+            "arquimenes": [-9.9133, -63.0408],
+            "ariquemes": [-9.9133, -63.0408],
+
+            /* IF SUDESTE MG - Reitoria / Juiz de Fora */
+            "if sudeste mg — reitoria": [-21.7642, -43.3503],
+            "if sudeste mg - reitoria": [-21.7642, -43.3503],
+            "if sudeste mg": [-21.7642, -43.3503],
+
+            /* IF Goiano - Reitoria / Goiânia */
+            "if goiano": [-16.6869, -49.2648],
+
+            /* IFAC - Baixada do Sol / Rio Branco */
+            "ifac — baixada do sol": [-9.9754, -67.8249],
+            "ifac - baixada do sol": [-9.9754, -67.8249],
+            "baixada do sol": [-9.9754, -67.8249],
+
+            /* IFF - Campos Guarus */
+            "iff — guarus": [-21.7622, -41.3181],
+            "iff - guarus": [-21.7622, -41.3181],
+            "guarus": [-21.7622, -41.3181],
+
+            /* IFF - Campos Centro */
+            "iff — centro": [-21.7622, -41.3181],
+            "iff - centro": [-21.7622, -41.3181],
+
+            /* IFRJ - Realengo */
+            "ifrj — realengo": [-22.8859, -43.4232],
+            "ifrj - realengo": [-22.8859, -43.4232],
+            "realengo": [-22.8859, -43.4232],
+
+            /* IFAM - Parintins
+            Seu registro aparece como "Paritins" */
+            "ifam — paritins": [-2.6278, -56.7358],
+            "ifam - paritins": [-2.6278, -56.7358],
+            "ifam — parintins": [-2.6278, -56.7358],
+            "ifam - parintins": [-2.6278, -56.7358],
+            "paritins": [-2.6278, -56.7358],
+            "parintins": [-2.6278, -56.7358],
+
+            /* IFPI - Reitoria / Teresina */
+            "ifpi": [-5.0892, -42.8016],
+
+            /* IFPI - Dirceu Arcoverde / Teresina */
+            "ifpi — dirceu arco verde": [-5.0740, -42.7570],
+            "ifpi - dirceu arco verde": [-5.0740, -42.7570],
+            "ifpi — dirceu arcoverde": [-5.0740, -42.7570],
+            "ifpi - dirceu arcoverde": [-5.0740, -42.7570],
+            "dirceu arco verde": [-5.0740, -42.7570],
+            "dirceu arcoverde": [-5.0740, -42.7570],
+
+            /* IFMA - Reitoria / São Luís */
+            "ifma": [-2.5307, -44.3068],
+
+            /* IFCE - Pecém / Caucaia */
+            "ifce — pecem": [-3.6535, -38.8754],
+            "ifce - pecem": [-3.6535, -38.8754],
+            "pecem": [-3.6535, -38.8754],
+
+            /* IFCE - Reitoria / Fortaleza */
+            "ifce": [-3.7319, -38.5267],
+
+            /* IFAL - Benedito Bentes / Maceió */
+            "ifal — benedito bentes": [-9.5740, -35.7360],
+            "ifal - benedito bentes": [-9.5740, -35.7360],
+            "benedito bentes": [-9.5740, -35.7360],
+
+            /* IFG - Águas Lindas */
+            "ifg — aguas lindas": [-15.7617, -48.2756],
+            "ifg - aguas lindas": [-15.7617, -48.2756],
+            "aguas lindas": [-15.7617, -48.2756],
+
+            /* IFC - Reitoria / Blumenau */
+            "ifc": [-26.9153, -49.0709],
+
+            /* IFES - Cefor / Vitória */
+            "ifes — cefor": [-20.3006, -40.3177],
+            "ifes - cefor": [-20.3006, -40.3177],
+            "cefor": [-20.3006, -40.3177],
+
+            /* IFES - Itapina / Colatina */
+            "ifes — itapina": [-19.5690, -40.7160],
+            "ifes - itapina": [-19.5690, -40.7160],
+            "itapina": [-19.5690, -40.7160],
+
+            /* IFRJ - Complexo do Alemão / Rio de Janeiro */
+            "ifrj — complexo do alemão": [-22.8750, -43.2590],
+            "ifrj - complexo do alemão": [-22.8750, -43.2590],
+            "complexo do alemão": [-22.8750, -43.2590],
+
+            /* IFRJ - Parque Olímpico / Rio de Janeiro */
+            "ifrj — parque olimpico": [-22.9780, -43.3950],
+            "ifrj - parque olimpico": [-22.9780, -43.3950],
+            "parque olimpico": [-22.9780, -43.3950],
+
+            /* IFPE - Reitoria / Recife */
+            "ifpe": [-8.0476, -34.8770],
+
+            /* IFSP - Pirituba / São Paulo */
+            "ifsp — pirituba": [-23.4860, -46.7310],
+            "ifsp - pirituba": [-23.4860, -46.7310],
+            "pirituba": [-23.4860, -46.7310],
+
+            "ifs": [-10.9472, -37.0731],
+
+            "ifam": [-3.1190, -60.0217],
+
+            "ifpa": [-1.4558, -48.5039],
+
+            "ifro": [-8.7612, -63.9004],
+
+            "if goiano": [-16.6869, -49.2648],
+
+            "ifpi": [-5.0892, -42.8016],
+
+            "ifma": [-2.5307, -44.3068],
+
+            "ifce": [-3.7319, -38.5267],
+
+            "ifc": [-26.9153, -49.0709],
+
+            "ifrj — complexo do alemão": [-22.8750, -43.2590],
+
+            "ifpe": [-8.0476, -34.8770]
+
+        };
+
+
+
+        /* ==================================================
+           NORMALIZAÇÃO
+        ================================================== */
+
+        function normalizarTexto(txt) {
+
+            if (!txt) {
+                return "";
             }
-        });
 
-        function preencherOpcoesDosFiltros(dados) {
-            let institutos = [...new Set(dados.map(d => d["INSTITUTO"].trim()))].sort();
-            
-            let todosOsTipos = [];
-            dados.forEach(d => {
-                let tipoBruto = d["TIPO"] ? d["TIPO"].trim() : "Não definido";
-                // Aplica a formatação na hora de ler os tipos da planilha
-                let tiposSeparados = tipoBruto.split(',').map(t => formatarTextoBonito(t)).filter(t => t !== "");
-                todosOsTipos.push(...tiposSeparados);
-            });
-            let tiposUnicos = [...new Set(todosOsTipos)].sort();
 
-            let selectInst = document.getElementById("filtroInstituto");
-            institutos.forEach(inst => selectInst.innerHTML += `<option value="${inst}">${inst}</option>`);
+            return String(txt)
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(
+                    /[\u0300-\u036f]/g,
+                    ""
+                )
+                .replace(
+                    /\s+/g,
+                    " "
+                )
+                .trim();
 
-            let selectTipo = document.getElementById("filtroTipo");
-            tiposUnicos.forEach(tipo => selectTipo.innerHTML += `<option value="${tipo}">${tipo}</option>`);
         }
 
-        function aplicarFiltros() {
-            let textoBusca = document.getElementById("busca").value.toLowerCase();
-            let instSelecionado = document.getElementById("filtroInstituto").value;
-            let tipoSelecionado = document.getElementById("filtroTipo").value;
 
-            dadosFiltradosAtuais = dadosGlobais.filter(projeto => {
-                let nome = (projeto["NOME PROJETO"] || "").toLowerCase();
-                let resumo = (projeto["Resumo"] || "").toLowerCase();
-                let instituto = projeto["INSTITUTO"].trim();
-                
-                let tipoBruto = projeto["TIPO"] ? projeto["TIPO"].trim() : "Não definido";
-                // Aplica a formatação na busca também
-                let tiposSeparados = tipoBruto.split(',').map(t => formatarTextoBonito(t)).filter(t => t !== ""); 
 
-                let passaTexto = nome.includes(textoBusca) || resumo.includes(textoBusca);
-                let passaInst = instSelecionado === "" || instituto === instSelecionado;
-                let passaTipo = tipoSelecionado === "" || tiposSeparados.includes(tipoSelecionado);
+        /* ==================================================
+           TEXTO BONITO
+        ================================================== */
 
-                return passaTexto && passaInst && passaTipo;
-            });
+        function formatarTextoBonito(texto) {
 
-            paginaAtual = 1; 
-            gerarGraficos(dadosFiltradosAtuais);
-            mostrarProjetosPaginados();
+            if (!texto) {
+                return "Não definido";
+            }
+
+
+            return String(texto)
+                .trim()
+                .toLowerCase()
+                .split(/\s+/)
+                .map(
+                    palavra =>
+                        palavra.charAt(0).toUpperCase()
+                        +
+                        palavra.slice(1)
+                )
+                .join(" ");
+
         }
 
-        function mostrarProjetosPaginados() {
-            const container = document.getElementById("projetos");
-            
-            if(dadosFiltradosAtuais.length === 0) {
-                container.innerHTML = "<h3 style='grid-column: 1 / -1; text-align: center; color: #7f8c8d;'>Nenhum projeto encontrado.</h3>";
+
+
+        /* ==================================================
+           ESCAPAR HTML
+        ================================================== */
+
+        function escaparHTML(texto) {
+
+            return String(texto ?? "")
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
+
+
+
+        /* ==================================================
+           CRIAR MAPA
+        ================================================== */
+
+        function criarMapa() {
+
+            if (mapaLeaflet) {
                 return;
             }
 
-            let inicio = (paginaAtual - 1) * itensPorPagina;
-            let fim = inicio + itensPorPagina;
-            let projetosDaPagina = dadosFiltradosAtuais.slice(inicio, fim);
-            let totalPaginas = Math.ceil(dadosFiltradosAtuais.length / itensPorPagina);
 
-            let htmlFinal = "";
+            mapaLeaflet =
+                L.map(
+                    "mapa",
+                    {
+                        preferCanvas: true,
+                        scrollWheelZoom: true,
+                        zoomControl: true,
+                        dragging: true,
+                        doubleClickZoom: true
+                    }
+                )
+                .setView(
+                    [-15.7801, -47.9292],
+                    4
+                );
 
-            projetosDaPagina.forEach(projeto => {
-                let instituto = projeto["INSTITUTO"];
-                let campus = projeto["CAMPUS"] || "";
-                let nomeRaw = projeto["NOME PROJETO"] ? projeto["NOME PROJETO"].trim() : "";
-                let resumo = projeto["Resumo"] || "Sem resumo disponível.";
-                let link = projeto["REFERÊNCIA"] || "";
 
-                let tipoBruto = projeto["TIPO"] ? projeto["TIPO"].trim() : "Não definido";
-                // Aplica a formatação nos selos dos cartões
-                let tiposSeparados = tipoBruto.split(',').map(t => formatarTextoBonito(t)).filter(t => t !== ""); 
-                
-                let tagsHTML = "";
-                
-                if (tiposSeparados.length === 0) {
-                    tagsHTML = `<div class="tipo">Não definido</div>`;
-                } else {
-                    tiposSeparados.forEach(tag => {
-                        let classeTipo = tag.toUpperCase().includes("SEM PROJETO") ? "tipo sem-projeto" : "tipo";
-                        tagsHTML += `<div class="${classeTipo}">${tag}</div>`;
-                    });
+            L.tileLayer(
+                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+                    maxZoom: 19,
+                    attribution:
+                        "&copy; OpenStreetMap contributors"
                 }
+            )
+            .addTo(mapaLeaflet);
 
-                let linkHTML = link ? `<a href="${link}" target="_blank" class="link">Acessar Referência ➔</a>` : "";
-                let tituloHTML = nomeRaw ? `<div class="titulo">${nomeRaw}</div>` : "";
 
-                htmlFinal += `
-                    <div class="cartao">
-                        <div class="instituto">${instituto} ${campus ? '— ' + campus : ''}</div>
-                        ${tituloHTML}
-                        <div class="tags-container">
-                            ${tagsHTML}
-                        </div>
-                        <div class="resumo">${resumo}</div>
-                        ${linkHTML}
-                    </div>
-                `;
-            });
 
-            htmlFinal += `
-                <div class="paginacao">
-                    <button class="btn-pagina" onclick="mudarPagina(-1)" ${paginaAtual === 1 ? 'disabled' : ''}>⬅</button>
-                    <span id="info-pagina">
-                        Pág <input type="number" id="input-pagina" value="${paginaAtual}" min="1" max="${totalPaginas}" onchange="irParaPagina(this.value, ${totalPaginas})"> de ${totalPaginas}
-                    </span>
-                    <button class="btn-pagina" onclick="mudarPagina(1)" ${paginaAtual === totalPaginas ? 'disabled' : ''}>➡</button>
-                </div>
-            `;
-            
-            container.innerHTML = htmlFinal;
-        }
+            /*
+             * Agrupamento dos marcadores.
+             *
+             * Isso deixa centenas de campi
+             * muito mais fáceis de navegar.
+             */
 
-        function mudarPagina(direcao) {
-            paginaAtual += direcao;
-            mostrarProjetosPaginados();
-            document.getElementById("projetos").scrollIntoView({ behavior: 'smooth' });
-        }
+            camadasMarcadores =
+                L.markerClusterGroup({
 
-        function irParaPagina(valor, maximo) {
-            let novaPagina = parseInt(valor);
-            if (novaPagina >= 1 && novaPagina <= maximo) {
-                paginaAtual = novaPagina;
-                mostrarProjetosPaginados();
-                document.getElementById("projetos").scrollIntoView({ behavior: 'smooth' });
-            } else {
-                alert("Página inválida!");
-                mostrarProjetosPaginados(); 
-            }
-        }
+                    chunkedLoading:
+                        true,
 
-        function gerarGraficos(dados) {
-            let contagemTipos = {};
-            let contagemInstitutos = {};
-            let contagemStatus = { "Com Projeto": 0, "Sem Projeto": 0 };
+                    chunkInterval:
+                        40,
 
-            dados.forEach(linha => {
-                let tipoBruto = linha["TIPO"] ? linha["TIPO"].trim() : "Não definido";
-                let instituto = linha["INSTITUTO"] ? linha["INSTITUTO"].trim() : "";
-                
-                // Aplica a formatação no gráfico de pizza
-                let tiposSeparados = tipoBruto.split(',').map(t => formatarTextoBonito(t)).filter(t => t !== "");
-                
-                tiposSeparados.forEach(t => {
-                    contagemTipos[t] = (contagemTipos[t] || 0) + 1;
+                    chunkDelay:
+                        10,
+
+                    maxClusterRadius:
+                        45,
+
+                    spiderfyOnMaxZoom:
+                        true,
+
+                    showCoverageOnHover:
+                        false,
+
+                    zoomToBoundsOnClick:
+                        true,
+
+                    removeOutsideVisibleBounds:
+                        true,
+
+                    animate:
+                        true,
+
+                    animateAddingMarkers:
+                        false,
+
+                    disableClusteringAtZoom:
+                        12
+
                 });
 
-                contagemInstitutos[instituto] = (contagemInstitutos[instituto] || 0) + 1;
-                
-                if (tipoBruto.toUpperCase().includes("SEM PROJETO")) {
-                    contagemStatus["Sem Projeto"]++;
-                } else {
-                    contagemStatus["Com Projeto"]++;
-                }
-            });
 
-            if(chartStatus) chartStatus.destroy();
-            if(chartTipo) chartTipo.destroy();
-            if(chartInstituto) chartInstituto.destroy();
+            mapaLeaflet.addLayer(
+                camadasMarcadores
+            );
 
-            Chart.defaults.font.family = "'Segoe UI', sans-serif";
-            Chart.defaults.color = '#333';
-
-            chartStatus = new Chart(document.getElementById('graficoStatus'), {
-                type: 'pie',
-                data: { labels: Object.keys(contagemStatus), datasets: [{ data: Object.values(contagemStatus), backgroundColor: ['#2F9E41', '#E02041'] }] },
-                options: { plugins: { title: { display: true, text: 'Campi Com vs Sem Projeto', font: {size: 16} } } }
-            });
-
-            chartTipo = new Chart(document.getElementById('graficoTipo'), {
-                type: 'doughnut',
-                data: { labels: Object.keys(contagemTipos), datasets: [{ data: Object.values(contagemTipos), backgroundColor: ['#2980b9', '#f39c12', '#8e44ad', '#2c3e50', '#16a085', '#d35400', '#27ae60'] }] },
-                options: { plugins: { title: { display: true, text: 'Projetos por Categoria', font: {size: 16} } } }
-            });
-
-            chartInstituto = new Chart(document.getElementById('graficoInstituto'), {
-                type: 'bar',
-                data: { labels: Object.keys(contagemInstitutos), datasets: [{ label: 'Qtd', data: Object.values(contagemInstitutos), backgroundColor: '#2F9E41' }] },
-                options: { scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }, plugins: { title: { display: true, text: 'Registros por Local', font: {size: 16} }, legend: { display: false } } }
-            });
         }
+
+
+
+        /* ==================================================
+           CARREGAR MUNICÍPIOS
+        ================================================== */
+
+        async function carregarMunicipios() {
+
+            const status =
+                document.getElementById(
+                    "statusMapa"
+                );
+
+
+            status.textContent =
+                "Carregando coordenadas dos municípios...";
+
+
+            try {
+
+                const resposta =
+                    await fetch(
+                        urlMunicipios
+                    );
+
+
+                if (!resposta.ok) {
+
+                    throw new Error(
+                        "Erro ao carregar municípios."
+                    );
+
+                }
+
+
+                municipiosBrasil =
+                    await resposta.json();
+
+
+                /*
+                 * Ordenamos pelo nome maior primeiro.
+                 *
+                 * Isso ajuda a encontrar:
+                 *
+                 * "Rio Grande"
+                 *
+                 * antes de:
+                 *
+                 * "Rio"
+                 */
+
+                municipiosOrdenados =
+                    municipiosBrasil
+                        .filter(
+                            municipio =>
+                                municipio.nome &&
+                                Number.isFinite(
+                                    Number(
+                                        municipio.latitude
+                                    )
+                                ) &&
+                                Number.isFinite(
+                                    Number(
+                                        municipio.longitude
+                                    )
+                                )
+                        )
+                        .sort(
+                            (a, b) =>
+                                normalizarTexto(
+                                    b.nome
+                                ).length
+                                -
+                                normalizarTexto(
+                                    a.nome
+                                ).length
+                        );
+
+
+                return true;
+
+            } catch (erro) {
+
+                console.error(
+                    erro
+                );
+
+
+                status.textContent =
+                    "Erro ao carregar a base de municípios.";
+
+
+                return false;
+
+            }
+
+        }
+
+
+
+        /* ==================================================
+           ENCONTRAR MUNICÍPIO
+        ================================================== */
+
+        function encontrarMunicipio(
+            texto,
+            uf = ""
+        ) {
+
+            if (!texto) {
+                return null;
+            }
+
+
+            const textoNormalizado =
+                normalizarTexto(
+                    texto
+                );
+
+
+            if (!textoNormalizado) {
+                return null;
+            }
+
+
+            const ufNormalizada =
+                normalizarTexto(
+                    uf
+                );
+
+
+            let encontradoSemUF =
+                null;
+
+
+            /*
+             * Procura o nome inteiro do município
+             * dentro do nome do campus.
+             */
+
+            for (
+                const municipio
+                of municipiosOrdenados
+            ) {
+
+                const nomeMunicipio =
+                    normalizarTexto(
+                        municipio.nome
+                    );
+
+
+                if (
+                    nomeMunicipio.length < 4
+                ) {
+                    continue;
+                }
+
+
+                if (
+                    !textoNormalizado.includes(
+                        nomeMunicipio
+                    )
+                ) {
+                    continue;
+                }
+
+
+                /*
+                 * Se temos UF, tenta usar a UF
+                 * para eliminar cidades repetidas.
+                 */
+
+                if (ufNormalizada) {
+
+                    const ufMunicipio =
+                        normalizarTexto(
+                            municipio.uf
+                        );
+
+
+                    if (
+                        ufMunicipio ===
+                        ufNormalizada
+                    ) {
+
+                        return municipio;
+
+                    }
+
+                }
+
+
+                if (!encontradoSemUF) {
+
+                    encontradoSemUF =
+                        municipio;
+
+                }
+
+            }
+
+
+            return encontradoSemUF;
+
+        }
+
+
+
+        /* ==================================================
+           OBTER COORDENADAS
+        ================================================== */
+
+        function obterCoordenadas(
+            instituto,
+            campus,
+            cidade,
+            uf,
+            estado
+        ) {
+
+            const institutoNormalizado =
+                normalizarTexto(instituto);
+
+            const campusNormalizado =
+                normalizarTexto(campus);
+
+            const cidadeNormalizada =
+                normalizarTexto(cidade);
+
+
+            /*
+            * =====================================================
+            * 1. TENTA A COMBINAÇÃO INSTITUTO + CAMPUS
+            * =====================================================
+            */
+
+            const combinacoes = [
+
+                `${institutoNormalizado} — ${campusNormalizado}`,
+
+                `${institutoNormalizado} - ${campusNormalizado}`,
+
+                `${institutoNormalizado} ${campusNormalizado}`
+
+            ];
+
+
+            for (const combinacao of combinacoes) {
+
+                for (
+                    const chave in coordenadasCampi
+                ) {
+
+                    const chaveNormalizada =
+                        normalizarTexto(chave);
+
+
+                    if (
+                        chaveNormalizada ===
+                        combinacao
+                    ) {
+
+                        return coordenadasCampi[chave];
+
+                    }
+
+                }
+
+            }
+
+
+            /*
+            * =====================================================
+            * 2. TENTA O CAMPUS SOZINHO
+            * =====================================================
+            */
+
+            if (campusNormalizado) {
+
+                for (
+                    const chave in coordenadasCampi
+                ) {
+
+                    const chaveNormalizada =
+                        normalizarTexto(chave);
+
+
+                    if (
+                        chaveNormalizada ===
+                        campusNormalizado
+                    ) {
+
+                        return coordenadasCampi[chave];
+
+                    }
+
+                }
+
+            }
+
+
+            /*
+            * =====================================================
+            * 3. TENTA O INSTITUTO SOZINHO
+            *
+            * Isso resolve:
+            *
+            * IFS
+            * IFAM
+            * IFPA
+            * IFRO
+            * IF Goiano
+            * IFPI
+            * IFMA
+            * IFCE
+            * IFC
+            * IFPE
+            * =====================================================
+            */
+
+            if (institutoNormalizado) {
+
+                for (
+                    const chave in coordenadasCampi
+                ) {
+
+                    const chaveNormalizada =
+                        normalizarTexto(chave);
+
+
+                    if (
+                        chaveNormalizada ===
+                        institutoNormalizado
+                    ) {
+
+                        return coordenadasCampi[chave];
+
+                    }
+
+                }
+
+            }
+
+
+            /*
+            * =====================================================
+            * 4. PROCURA CORRESPONDÊNCIA PARCIAL
+            *
+            * Também resolve:
+            *
+            * IFRJ — Complexo do Alemão
+            *
+            * mesmo com acento diferente.
+            * =====================================================
+            */
+
+            if (campusNormalizado) {
+
+                for (
+                    const chave in coordenadasCampi
+                ) {
+
+                    const chaveNormalizada =
+                        normalizarTexto(chave);
+
+
+                    if (
+                        chaveNormalizada.includes(
+                            campusNormalizado
+                        )
+                    ) {
+
+                        return coordenadasCampi[chave];
+
+                    }
+
+                }
+
+            }
+
+
+            /*
+            * =====================================================
+            * 5. TENTA CIDADE
+            * =====================================================
+            */
+
+            if (cidadeNormalizada) {
+
+                const municipio =
+                    encontrarMunicipio(
+                        cidadeNormalizada,
+                        uf
+                    );
+
+
+                if (municipio) {
+
+                    return [
+
+                        Number(
+                            municipio.latitude
+                        ),
+
+                        Number(
+                            municipio.longitude
+                        )
+
+                    ];
+
+                }
+
+            }
+
+
+            /*
+            * =====================================================
+            * 6. TENTA O NOME DO CAMPUS
+            * =====================================================
+            */
+
+            if (campusNormalizado) {
+
+                const municipio =
+                    encontrarMunicipio(
+                        campusNormalizado,
+                        uf
+                    );
+
+
+                if (municipio) {
+
+                    return [
+
+                        Number(
+                            municipio.latitude
+                        ),
+
+                        Number(
+                            municipio.longitude
+                        )
+
+                    ];
+
+                }
+
+            }
+
+
+            /*
+            * =====================================================
+            * 7. TENTA INSTITUTO + CAMPUS
+            * =====================================================
+            */
+
+            const textoCompleto =
+                `${institutoNormalizado} ${campusNormalizado}`;
+
+
+            const municipio =
+                encontrarMunicipio(
+                    textoCompleto,
+                    uf
+                );
+
+
+            if (municipio) {
+
+                return [
+
+                    Number(
+                        municipio.latitude
+                    ),
+
+                    Number(
+                        municipio.longitude
+                    )
+
+                ];
+
+            }
+
+
+            /*
+            * =====================================================
+            * 8. NÃO ENCONTROU
+            * =====================================================
+            */
+
+            return null;
+
+        }
+
+
+
+        /* ==================================================
+           ADICIONAR MARCADOR
+        ================================================== */
+
+        function adicionarMarcador(
+            local,
+            coords
+        ) {
+
+            if (!coords) {
+                return;
+            }
+
+
+            const marker =
+                L.marker(
+                    coords,
+                    {
+                        title:
+                            local.nomeExibicao,
+
+                        alt:
+                            local.nomeExibicao,
+
+                        riseOnHover:
+                            true
+                    }
+                );
+
+
+
+            const popup =
+                document.createElement(
+                    "div"
+                );
+
+
+            popup.className =
+                "popup-campus";
+
+
+
+            const titulo =
+                document.createElement(
+                    "strong"
+                );
+
+
+            titulo.textContent =
+                local.nomeExibicao;
+
+
+
+            const quantidade =
+                document.createElement(
+                    "span"
+                );
+
+
+            quantidade.textContent =
+                `${local.qtdProjetos} registro(s)`;
+
+
+
+            const botao =
+                document.createElement(
+                    "button"
+                );
+
+
+            botao.textContent =
+                "Ver projetos";
+
+
+
+            botao.addEventListener(
+                "click",
+                function() {
+
+                    filtrarPeloMapa(
+                        local.instituto,
+                        local.campus
+                    );
+
+                }
+            );
+
+
+
+            popup.appendChild(
+                titulo
+            );
+
+
+            popup.appendChild(
+                quantidade
+            );
+
+
+            popup.appendChild(
+                botao
+            );
+
+
+
+            marker.bindPopup(
+                popup,
+                {
+                    maxWidth: 300
+                }
+            );
+
+
+
+            camadasMarcadores.addLayer(
+                marker
+            );
+
+
+            locaisComCoordenadas++;
+
+        }
+
+
+
+        /* ==================================================
+           INICIALIZAR MAPA
+        ================================================== */
+
+        async function inicializarEMapearUnidades() {
+
+            criarMapa();
+
+            camadasMarcadores.clearLayers();
+
+            locaisComCoordenadas = 0;
+            locaisSemCoordenadas = 0;
+
+            const status =
+                document.getElementById("statusMapa");
+
+            const statusQuantidade =
+                document.getElementById(
+                    "statusQuantidadeCampi"
+                );
+
+            const avisoSemCoordenadas =
+                document.getElementById(
+                    "campiSemCoordenadas"
+                );
+
+
+            status.textContent =
+                "Carregando coordenadas dos municípios...";
+
+
+            const municipiosOK =
+                await carregarMunicipios();
+
+
+            if (!municipiosOK) {
+                return;
+            }
+
+
+            const locaisUnicos = {};
+
+
+            /*
+            * ================================================
+            * CRIA UMA LISTA ÚNICA DE CAMPI
+            * ================================================
+            */
+
+            dadosGlobais.forEach(projeto => {
+
+                const instituto =
+                    (
+                        projeto["INSTITUTO"] ||
+                        ""
+                    ).trim();
+
+                const campus =
+                    (
+                        projeto["CAMPUS"] ||
+                        ""
+                    ).trim();
+
+
+                if (!instituto) {
+                    return;
+                }
+
+
+                /*
+                * Campus vazio:
+                * ainda tratamos o instituto como local.
+                */
+
+                const chave =
+                    campus
+                        ? `${instituto} — ${campus}`
+                        : instituto;
+
+
+                /*
+                * Possíveis campos de cidade.
+                */
+
+                const cidade =
+                    (
+                        projeto["MUNICÍPIO"] ||
+                        projeto["MUNICIPIO"] ||
+                        projeto["CIDADE"] ||
+                        projeto["CIDADE/MUNICÍPIO"] ||
+                        projeto["LOCALIDADE"] ||
+                        ""
+                    ).trim();
+
+
+                const uf =
+                    (
+                        projeto["UF"] ||
+                        projeto["ESTADO UF"] ||
+                        ""
+                    ).trim();
+
+
+                const estado =
+                    (
+                        projeto["ESTADO"] ||
+                        ""
+                    ).trim();
+
+
+                if (!locaisUnicos[chave]) {
+
+                    locaisUnicos[chave] = {
+
+                        instituto:
+                            instituto,
+
+                        campus:
+                            campus,
+
+                        cidade:
+                            cidade,
+
+                        uf:
+                            uf,
+
+                        estado:
+                            estado,
+
+                        nomeExibicao:
+                            chave,
+
+                        qtdProjetos:
+                            0
+
+                    };
+
+                }
+
+
+                locaisUnicos[chave]
+                    .qtdProjetos++;
+
+            });
+
+
+            const locais =
+                Object.values(
+                    locaisUnicos
+                );
+
+
+            /*
+            * ================================================
+            * QUANTIDADE REAL DE CAMPI DA PLANILHA
+            * ================================================
+            */
+
+            document.getElementById(
+                "quantidadeCampiMapa"
+            ).textContent =
+                locais.length;
+
+
+            statusQuantidade.textContent =
+                "verificando localização...";
+
+
+            status.textContent =
+                `Posicionando ${locais.length} campi...`;
+
+
+            const bounds =
+                L.latLngBounds([]);
+
+
+            const campiSemCoordenadas =
+                [];
+
+
+            /*
+            * ================================================
+            * PROCURA COORDENADAS
+            * ================================================
+            */
+
+            locais.forEach(local => {
+
+                const coords =
+                    obterCoordenadas(
+
+                        local.instituto,
+
+                        local.campus,
+
+                        local.cidade,
+
+                        local.uf,
+
+                        local.estado
+
+                    );
+
+
+                if (coords) {
+
+                    adicionarMarcador(
+                        local,
+                        coords
+                    );
+
+
+                    bounds.extend(
+                        coords
+                    );
+
+                } else {
+
+                    locaisSemCoordenadas++;
+
+
+                    campiSemCoordenadas.push(
+                        local.nomeExibicao
+                    );
+
+                }
+
+            });
+
+
+            /*
+            * ================================================
+            * ENQUADRAR MAPA
+            * ================================================
+            */
+
+            if (
+                bounds.isValid()
+            ) {
+
+                mapaLeaflet.fitBounds(
+                    bounds,
+                    {
+                        padding: [40, 40],
+                        maxZoom: 7
+                    }
+                );
+
+            }
+
+
+            /*
+            * ================================================
+            * RESULTADO DA VERIFICAÇÃO
+            * ================================================
+            */
+
+            const porcentagem =
+                locais.length > 0
+                    ?
+                    (
+                        locaisComCoordenadas /
+                        locais.length
+                    ) * 100
+                    :
+                    0;
+
+
+            statusQuantidade.textContent =
+                `${locaisComCoordenadas}/${locais.length} localizados`;
+
+
+            if (
+                locaisSemCoordenadas === 0
+            ) {
+
+                status.textContent =
+                    `✓ Todos os ${locais.length} campi possuem marcador no mapa.`;
+
+                avisoSemCoordenadas.style.display =
+                    "none";
+
+            } else {
+
+                status.textContent =
+                    `${locaisComCoordenadas} de ${locais.length} campi localizados.`;
+
+
+                avisoSemCoordenadas.style.display =
+                    "block";
+
+
+                avisoSemCoordenadas.innerHTML = `
+
+                    <strong>
+                        ⚠ ${locaisSemCoordenadas} campus(s) não possuem coordenada.
+                    </strong>
+
+                    <br><br>
+
+                    ${campiSemCoordenadas
+                        .map(
+                            campus =>
+                                `• ${escaparHTML(campus)}`
+                        )
+                        .join("<br>")}
+
+                `;
+
+            }
+
+
+            console.log(
+                "================================"
+            );
+
+            console.log(
+                "CAMPI NA PLANILHA:",
+                locais.length
+            );
+
+            console.log(
+                "CAMPI NO MAPA:",
+                locaisComCoordenadas
+            );
+
+            console.log(
+                "CAMPI SEM COORDENADA:",
+                locaisSemCoordenadas
+            );
+
+            console.log(
+                "COBERTURA:",
+                porcentagem.toFixed(2) + "%"
+            );
+
+            console.log(
+                "================================"
+            );
+
+
+            setTimeout(
+                () => {
+
+                    mapaLeaflet.invalidateSize();
+
+                },
+                200
+            );
+
+        }
+
+
+        /* ==================================================
+           CLICAR NO MAPA
+        ================================================== */
+
+        function filtrarPeloMapa(
+            nomeInstituto,
+            nomeCampus
+        ) {
+
+
+            document.getElementById(
+                "busca"
+            ).value =
+                nomeCampus ||
+                nomeInstituto;
+
+
+
+            const selectInst =
+                document.getElementById(
+                    "filtroInstituto"
+                );
+
+
+
+            for (
+                let i = 0;
+                i <
+                selectInst.options.length;
+                i++
+            ) {
+
+                if (
+                    selectInst
+                        .options[i]
+                        .value
+                        .toLowerCase()
+                    ===
+                    nomeInstituto
+                        .toLowerCase()
+                ) {
+
+                    selectInst.selectedIndex =
+                        i;
+
+                    break;
+
+                }
+
+            }
+
+
+
+            aplicarFiltros();
+
+
+
+            document
+                .getElementById(
+                    "dashboard"
+                )
+                .scrollIntoView(
+                    {
+                        behavior:
+                            "smooth",
+
+                        block:
+                            "start"
+                    }
+                );
+
+        }
+
+
+
+        /* ==================================================
+           PREENCHER FILTROS
+        ================================================== */
+
+        function preencherOpcoesDosFiltros(
+            dados
+        ) {
+
+
+            const institutos =
+                [
+                    ...new Set(
+
+                        dados
+
+                            .map(
+                                d =>
+                                    (
+                                        d["INSTITUTO"] ||
+                                        ""
+                                    ).trim()
+                            )
+
+                            .filter(
+                                Boolean
+                            )
+
+                    )
+                ]
+                .sort();
+
+
+
+            const todosOsTipos =
+                [];
+
+
+
+            dados.forEach(
+                dado => {
+
+                    const tipoBruto =
+                        dado["TIPO"]
+                            ?
+                            dado["TIPO"].trim()
+                            :
+                            "Não definido";
+
+
+
+                    tipoBruto
+                        .split(",")
+                        .map(
+                            tipo =>
+                                formatarTextoBonito(
+                                    tipo
+                                )
+                        )
+                        .filter(
+                            Boolean
+                        )
+                        .forEach(
+                            tipo =>
+                                todosOsTipos.push(
+                                    tipo
+                                )
+                        );
+
+                }
+            );
+
+
+
+            const tiposUnicos =
+                [
+                    ...new Set(
+                        todosOsTipos
+                    )
+                ]
+                .sort();
+
+
+
+            const selectInst =
+                document.getElementById(
+                    "filtroInstituto"
+                );
+
+
+            selectInst.innerHTML =
+                `
+                    <option value="">
+                        Todos os Institutos / Locais
+                    </option>
+                `;
+
+
+
+            institutos.forEach(
+                instituto => {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option.value =
+                        instituto;
+
+
+                    option.textContent =
+                        instituto;
+
+
+                    selectInst.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+
+
+            const selectTipo =
+                document.getElementById(
+                    "filtroTipo"
+                );
+
+
+            selectTipo.innerHTML =
+                `
+                    <option value="">
+                        Todos os Tipos
+                    </option>
+                `;
+
+
+
+            tiposUnicos.forEach(
+                tipo => {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option.value =
+                        tipo;
+
+
+                    option.textContent =
+                        tipo;
+
+
+                    selectTipo.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+        }
+
+
+
+        /* ==================================================
+           LIMPAR FILTROS
+        ================================================== */
+
+        function limparFiltros() {
+
+            document.getElementById(
+                "busca"
+            ).value =
+                "";
+
+
+            document.getElementById(
+                "filtroInstituto"
+            ).value =
+                "";
+
+
+            document.getElementById(
+                "filtroTipo"
+            ).value =
+                "";
+
+
+            aplicarFiltros();
+
+        }
+
+
+
+        /* ==================================================
+           APLICAR FILTROS
+        ================================================== */
+
+        function aplicarFiltros() {
+
+            const textoBusca =
+                normalizarTexto(
+                    document.getElementById(
+                        "busca"
+                    ).value
+                );
+
+
+            const instSelecionado =
+                document.getElementById(
+                    "filtroInstituto"
+                ).value;
+
+
+            const tipoSelecionado =
+                document.getElementById(
+                    "filtroTipo"
+                ).value;
+
+
+
+            dadosFiltradosAtuais =
+                dadosGlobais.filter(
+                    projeto => {
+
+
+                        const nome =
+                            normalizarTexto(
+                                projeto[
+                                    "NOME PROJETO"
+                                ] ||
+                                ""
+                            );
+
+
+
+                        const resumo =
+                            normalizarTexto(
+                                projeto[
+                                    "Resumo"
+                                ] ||
+                                ""
+                            );
+
+
+
+                        const instituto =
+                            (
+                                projeto[
+                                    "INSTITUTO"
+                                ] ||
+                                ""
+                            ).trim();
+
+
+
+                        const campus =
+                            normalizarTexto(
+                                projeto[
+                                    "CAMPUS"
+                                ] ||
+                                ""
+                            );
+
+
+
+                        const tipoBruto =
+                            projeto["TIPO"]
+                                ?
+                                projeto["TIPO"].trim()
+                                :
+                                "Não definido";
+
+
+
+                        const tiposSeparados =
+                            tipoBruto
+                                .split(",")
+                                .map(
+                                    tipo =>
+                                        formatarTextoBonito(
+                                            tipo
+                                        )
+                                )
+                                .filter(
+                                    Boolean
+                                );
+
+
+
+                        const passaTexto =
+                            textoBusca === ""
+                            ||
+                            nome.includes(
+                                textoBusca
+                            )
+                            ||
+                            resumo.includes(
+                                textoBusca
+                            )
+                            ||
+                            normalizarTexto(
+                                instituto
+                            ).includes(
+                                textoBusca
+                            )
+                            ||
+                            campus.includes(
+                                textoBusca
+                            );
+
+
+
+                        const passaInstituto =
+                            instSelecionado === ""
+                            ||
+                            instituto ===
+                            instSelecionado;
+
+
+
+                        const passaTipo =
+                            tipoSelecionado === ""
+                            ||
+                            tiposSeparados.includes(
+                                tipoSelecionado
+                            );
+
+
+
+                        return (
+                            passaTexto
+                            &&
+                            passaInstituto
+                            &&
+                            passaTipo
+                        );
+
+                    }
+                );
+
+
+
+            paginaAtual =
+                1;
+
+
+
+            gerarGraficos(
+                dadosFiltradosAtuais
+            );
+
+
+            mostrarProjetosPaginados();
+
+
+            atualizarResumoResultados();
+
+        }
+
+
+
+        /* ==================================================
+           RESULTADOS
+        ================================================== */
+
+        function atualizarResumoResultados() {
+
+            const total =
+                dadosFiltradosAtuais.length;
+
+
+            document.getElementById(
+                "resumoResultados"
+            ).innerHTML = `
+
+                <span>
+
+                    <strong>
+                        ${total}
+                    </strong>
+
+                    registro(s) encontrado(s)
+
+                </span>
+
+            `;
+
+        }
+
+
+
+        /* ==================================================
+           MOSTRAR PROJETOS
+        ================================================== */
+
+        function mostrarProjetosPaginados() {
+
+            const container =
+                document.getElementById(
+                    "projetos"
+                );
+
+
+
+            if (
+                dadosFiltradosAtuais.length ===
+                0
+            ) {
+
+                container.innerHTML = `
+
+                    <div class="nenhum-projeto">
+
+                        <div class="icone-vazio">
+                            ⌕
+                        </div>
+
+                        <h3>
+                            Nenhum projeto encontrado
+                        </h3>
+
+                        <p>
+                            Tente alterar os filtros ou
+                            realizar uma pesquisa diferente.
+                        </p>
+
+                    </div>
+
+                `;
+
+                return;
+
+            }
+
+
+
+            const inicio =
+                (
+                    paginaAtual -
+                    1
+                ) *
+                itensPorPagina;
+
+
+
+            const fim =
+                inicio +
+                itensPorPagina;
+
+
+
+            const projetosDaPagina =
+                dadosFiltradosAtuais.slice(
+                    inicio,
+                    fim
+                );
+
+
+
+            const totalPaginas =
+                Math.ceil(
+                    dadosFiltradosAtuais.length /
+                    itensPorPagina
+                );
+
+
+
+            let htmlFinal =
+                "";
+
+
+
+            projetosDaPagina.forEach(
+                projeto => {
+
+
+                    const instituto =
+                        escaparHTML(
+                            projeto[
+                                "INSTITUTO"
+                            ] ||
+                            ""
+                        );
+
+
+
+                    const campus =
+                        projeto["CAMPUS"]
+                            ?
+                            projeto[
+                                "CAMPUS"
+                            ].trim()
+                            :
+                            "";
+
+
+
+                    const nomeRaw =
+                        projeto[
+                            "NOME PROJETO"
+                        ]
+                            ?
+                            projeto[
+                                "NOME PROJETO"
+                            ].trim()
+                            :
+                            "";
+
+
+
+                    const nome =
+                        escaparHTML(
+                            nomeRaw
+                        );
+
+
+
+                    const resumo =
+                        projeto[
+                            "Resumo"
+                        ]
+                            ?
+                            projeto[
+                                "Resumo"
+                            ]
+                            :
+                            "Sem resumo disponível.";
+
+
+
+                    const resumoSeguro =
+                        escaparHTML(
+                            resumo
+                        );
+
+
+
+                    const link =
+                        projeto[
+                            "REFERÊNCIA"
+                        ]
+                            ?
+                            projeto[
+                                "REFERÊNCIA"
+                            ].trim()
+                            :
+                            "";
+
+
+
+                    const tipoBruto =
+                        projeto[
+                            "TIPO"
+                        ]
+                            ?
+                            projeto[
+                                "TIPO"
+                            ].trim()
+                            :
+                            "Não definido";
+
+
+
+                    const tiposSeparados =
+                        tipoBruto
+                            .split(",")
+                            .map(
+                                tipo =>
+                                    formatarTextoBonito(
+                                        tipo
+                                    )
+                            )
+                            .filter(
+                                Boolean
+                            );
+
+
+
+                    let tagsHTML =
+                        "";
+
+
+
+                    tiposSeparados.forEach(
+                        tipo => {
+
+                            const classeTipo =
+                                tipo
+                                    .toUpperCase()
+                                    .includes(
+                                        "SEM PROJETO"
+                                    )
+                                    ?
+                                    "tipo sem-projeto"
+                                    :
+                                    "tipo";
+
+
+
+                            tagsHTML += `
+
+                                <span
+                                    class="${classeTipo}"
+                                >
+                                    ${escaparHTML(tipo)}
+                                </span>
+
+                            `;
+
+                        }
+                    );
+
+
+
+                    if (
+                        !tagsHTML
+                    ) {
+
+                        tagsHTML =
+                            `
+
+                                <span class="tipo">
+                                    Não definido
+                                </span>
+
+                            `;
+
+                    }
+
+
+
+                    const tituloHTML =
+                        nomeRaw
+                            ?
+                            `
+
+                                <div class="titulo">
+                                    ${nome}
+                                </div>
+
+                            `
+                            :
+                            "";
+
+
+
+                    const localHTML =
+                        campus
+                            ?
+                            `
+
+                                ${instituto}
+
+                                <span>
+                                    —
+                                </span>
+
+                                ${escaparHTML(
+                                    campus
+                                )}
+
+                            `
+                            :
+                            instituto;
+
+
+
+                    const linkHTML =
+                        link
+                            ?
+                            `
+
+                                <a
+                                    href="${escaparHTML(
+                                        link
+                                    )}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="link"
+                                >
+
+                                    Acessar referência
+
+                                    <span>
+                                        ↗
+                                    </span>
+
+                                </a>
+
+                            `
+                            :
+                            "";
+
+
+
+                    htmlFinal += `
+
+                        <article class="cartao">
+
+                            <div class="instituto">
+                                ${localHTML}
+                            </div>
+
+                            ${tituloHTML}
+
+                            <div class="tags-container">
+                                ${tagsHTML}
+                            </div>
+
+                            <div class="resumo">
+                                ${resumoSeguro}
+                            </div>
+
+                            ${linkHTML}
+
+                        </article>
+
+                    `;
+
+                }
+            );
+
+
+
+            /* PAGINAÇÃO */
+
+            htmlFinal += `
+
+                <div class="paginacao">
+
+
+                    <button
+                        class="btn-pagina"
+                        onclick="mudarPagina(-1)"
+                        ${paginaAtual === 1 ? "disabled" : ""}
+                    >
+                        ←
+                    </button>
+
+
+
+                    <div class="info-pagina">
+
+                        Página
+
+
+                        <input
+                            type="number"
+                            id="input-pagina"
+                            value="${paginaAtual}"
+                            min="1"
+                            max="${totalPaginas}"
+                            onchange="
+                                irParaPagina(
+                                    this.value,
+                                    ${totalPaginas}
+                                )
+                            "
+                        >
+
+
+                        de
+                        ${totalPaginas}
+
+                    </div>
+
+
+
+                    <button
+                        class="btn-pagina"
+                        onclick="mudarPagina(1)"
+                        ${
+                            paginaAtual === totalPaginas
+                                ? "disabled"
+                                : ""
+                        }
+                    >
+                        →
+                    </button>
+
+
+                </div>
+
+            `;
+
+
+
+            container.innerHTML =
+                htmlFinal;
+
+        }
+
+
+
+        /* ==================================================
+           MUDAR PÁGINA
+        ================================================== */
+
+        function mudarPagina(
+            direcao
+        ) {
+
+            const totalPaginas =
+                Math.ceil(
+                    dadosFiltradosAtuais.length /
+                    itensPorPagina
+                );
+
+
+
+            paginaAtual +=
+                direcao;
+
+
+
+            if (
+                paginaAtual < 1
+            ) {
+
+                paginaAtual =
+                    1;
+
+            }
+
+
+
+            if (
+                paginaAtual >
+                totalPaginas
+            ) {
+
+                paginaAtual =
+                    totalPaginas;
+
+            }
+
+
+
+            mostrarProjetosPaginados();
+
+
+
+            document
+                .getElementById(
+                    "projetos"
+                )
+                .scrollIntoView(
+                    {
+                        behavior:
+                            "smooth",
+
+                        block:
+                            "start"
+                    }
+                );
+
+        }
+
+
+
+        /* ==================================================
+           IR PARA PÁGINA
+        ================================================== */
+
+        function irParaPagina(
+            valor,
+            maximo
+        ) {
+
+            const novaPagina =
+                parseInt(
+                    valor
+                );
+
+
+
+            if (
+                novaPagina >= 1
+                &&
+                novaPagina <= maximo
+            ) {
+
+                paginaAtual =
+                    novaPagina;
+
+            } else {
+
+                alert(
+                    "Página inválida!"
+                );
+
+            }
+
+
+
+            mostrarProjetosPaginados();
+
+        }
+
+
+
+        /* ==================================================
+           GRÁFICOS
+        ================================================== */
+
+        function gerarGraficos(
+            dados
+        ) {
+
+            const contagemTipos =
+                {};
+
+            const contagemCampi =
+                {};
+
+
+
+            let comProjeto =
+                0;
+
+            let semProjeto =
+                0;
+
+
+
+            let comReferencia =
+                0;
+
+            let semReferencia =
+                0;
+
+
+
+            dados.forEach(
+                linha => {
+
+
+                    /* --------------------------------------
+                       TIPOS
+                    --------------------------------------- */
+
+                    const tipoBruto =
+                        linha["TIPO"]
+                            ?
+                            linha["TIPO"].trim()
+                            :
+                            "Não definido";
+
+
+
+                    const tipos =
+                        tipoBruto
+                            .split(",")
+                            .map(
+                                tipo =>
+                                    formatarTextoBonito(
+                                        tipo
+                                    )
+                            )
+                            .filter(
+                                Boolean
+                            );
+
+
+
+                    tipos.forEach(
+                        tipo => {
+
+                            contagemTipos[tipo] =
+                                (
+                                    contagemTipos[tipo]
+                                    ||
+                                    0
+                                )
+                                +
+                                1;
+
+                        }
+                    );
+
+
+
+                    /* --------------------------------------
+                       STATUS
+                    --------------------------------------- */
+
+                    if (
+                        tipoBruto
+                            .toUpperCase()
+                            .includes(
+                                "SEM PROJETO"
+                            )
+                    ) {
+
+                        semProjeto++;
+
+                    } else {
+
+                        comProjeto++;
+
+                    }
+
+
+
+                    /* --------------------------------------
+                       CAMPUS
+                    --------------------------------------- */
+
+                    const instituto =
+                        (
+                            linha[
+                                "INSTITUTO"
+                            ]
+                            ||
+                            ""
+                        ).trim();
+
+
+
+                    const campus =
+                        (
+                            linha[
+                                "CAMPUS"
+                            ]
+                            ||
+                            ""
+                        ).trim();
+
+
+
+                    const local =
+                        campus
+                            ||
+                            instituto
+                            ||
+                            "Não definido";
+
+
+
+                    contagemCampi[
+                        local
+                    ] =
+                        (
+                            contagemCampi[
+                                local
+                            ]
+                            ||
+                            0
+                        )
+                        +
+                        1;
+
+
+
+                    /* --------------------------------------
+                       REFERÊNCIAS
+                    --------------------------------------- */
+
+                    if (
+                        linha[
+                            "REFERÊNCIA"
+                        ]
+                        &&
+                        linha[
+                            "REFERÊNCIA"
+                        ].trim() !== ""
+                    ) {
+
+                        comReferencia++;
+
+                    } else {
+
+                        semReferencia++;
+
+                    }
+
+                }
+            );
+
+
+
+            /* ORDENAÇÃO */
+
+            const tiposOrdenados =
+                Object.entries(
+                    contagemTipos
+                )
+                .sort(
+                    (
+                        a,
+                        b
+                    ) =>
+                        b[1] -
+                        a[1]
+                );
+
+
+
+            const campiOrdenados =
+                Object.entries(
+                    contagemCampi
+                )
+                .sort(
+                    (
+                        a,
+                        b
+                    ) =>
+                        b[1] -
+                        a[1]
+                )
+                .slice(
+                    0,
+                    12
+                );
+
+
+
+            /* CORES */
+
+            const coresCategorias =
+                [
+
+                    "#2F9E41",
+
+                    "#2980B9",
+
+                    "#E67E22",
+
+                    "#8E44AD",
+
+                    "#16A085",
+
+                    "#E02041",
+
+                    "#34495E",
+
+                    "#F1C40F",
+
+                    "#1ABC9C",
+
+                    "#9B59B6"
+
+                ];
+
+
+
+            /* DESTROY */
+
+            if (
+                chartStatus
+            ) {
+
+                chartStatus.destroy();
+
+            }
+
+
+            if (
+                chartTipo
+            ) {
+
+                chartTipo.destroy();
+
+            }
+
+
+            if (
+                chartCampus
+            ) {
+
+                chartCampus.destroy();
+
+            }
+
+
+            if (
+                chartReferencia
+            ) {
+
+                chartReferencia.destroy();
+
+            }
+
+
+
+            Chart.defaults.font.family =
+                "'Segoe UI', Tahoma, sans-serif";
+
+
+
+            Chart.defaults.color =
+                "#344054";
+
+
+
+            /* =================================================
+               1. SITUAÇÃO
+            ================================================= */
+
+            chartStatus =
+                new Chart(
+
+                    document.getElementById(
+                        "graficoStatus"
+                    ),
+
+                    {
+
+                        type:
+                            "doughnut",
+
+
+                        data:
+                            {
+
+                                labels:
+                                    [
+
+                                        "Com projeto",
+
+                                        "Sem projeto"
+
+                                    ],
+
+
+                                datasets:
+                                    [
+
+                                        {
+
+                                            data:
+                                                [
+
+                                                    comProjeto,
+
+                                                    semProjeto
+
+                                                ],
+
+
+                                            backgroundColor:
+                                                [
+
+                                                    "#2F9E41",
+
+                                                    "#E02041"
+
+                                                ],
+
+
+                                            borderWidth:
+                                                4,
+
+
+                                            borderColor:
+                                                "#ffffff"
+
+                                        }
+
+                                    ]
+
+                            },
+
+
+                        options:
+                            {
+
+                                responsive:
+                                    true,
+
+
+                                maintainAspectRatio:
+                                    false,
+
+
+                                cutout:
+                                    "62%",
+
+
+                                plugins:
+                                    {
+
+                                        legend:
+                                            {
+
+                                                position:
+                                                    "bottom",
+
+
+                                                labels:
+                                                    {
+
+                                                        padding:
+                                                            18,
+
+
+                                                        usePointStyle:
+                                                            true
+
+                                                    }
+
+                                            }
+
+                                    }
+
+                            }
+
+                    }
+
+                );
+
+
+
+            /* =================================================
+               2. CATEGORIAS
+            ================================================= */
+
+            chartTipo =
+                new Chart(
+
+                    document.getElementById(
+                        "graficoTipo"
+                    ),
+
+                    {
+
+                        type:
+                            "pie",
+
+
+                        data:
+                            {
+
+                                labels:
+                                    tiposOrdenados.map(
+                                        item =>
+                                            item[0]
+                                    ),
+
+
+                                datasets:
+                                    [
+
+                                        {
+
+                                            data:
+                                                tiposOrdenados.map(
+                                                    item =>
+                                                        item[1]
+                                                ),
+
+
+                                            backgroundColor:
+                                                tiposOrdenados.map(
+
+                                                    (
+                                                        _,
+                                                        indice
+                                                    ) =>
+
+                                                        coresCategorias[
+                                                            indice
+                                                            %
+                                                            coresCategorias.length
+                                                        ]
+
+                                                ),
+
+
+                                            borderWidth:
+                                                3,
+
+
+                                            borderColor:
+                                                "#ffffff"
+
+                                        }
+
+                                    ]
+
+                            },
+
+
+                        options:
+                            {
+
+                                responsive:
+                                    true,
+
+
+                                maintainAspectRatio:
+                                    false,
+
+
+                                plugins:
+                                    {
+
+                                        legend:
+                                            {
+
+                                                position:
+                                                    "right",
+
+
+                                                labels:
+                                                    {
+
+                                                        padding:
+                                                            10,
+
+                                                        usePointStyle:
+                                                            true
+
+                                                    }
+
+                                            }
+
+                                    }
+
+                            }
+
+                    }
+
+                );
+
+
+
+            /* =================================================
+               3. CAMPI
+            ================================================= */
+
+            chartCampus =
+                new Chart(
+
+                    document.getElementById(
+                        "graficoCampus"
+                    ),
+
+                    {
+
+                        type:
+                            "bar",
+
+
+                        data:
+                            {
+
+                                labels:
+                                    campiOrdenados.map(
+                                        item =>
+                                            item[0]
+                                    ),
+
+
+                                datasets:
+                                    [
+
+                                        {
+
+                                            label:
+                                                "Registros",
+
+
+                                            data:
+                                                campiOrdenados.map(
+                                                    item =>
+                                                        item[1]
+                                                ),
+
+
+                                            backgroundColor:
+                                                "#2980B9",
+
+
+                                            borderRadius:
+                                                7,
+
+
+                                            borderSkipped:
+                                                false
+
+                                        }
+
+                                    ]
+
+                            },
+
+
+                        options:
+                            {
+
+                                indexAxis:
+                                    "y",
+
+
+                                responsive:
+                                    true,
+
+
+                                maintainAspectRatio:
+                                    false,
+
+
+                                plugins:
+                                    {
+
+                                        legend:
+                                            {
+
+                                                display:
+                                                    false
+
+                                            }
+
+                                    },
+
+
+                                scales:
+                                    {
+
+                                        x:
+                                            {
+
+                                                beginAtZero:
+                                                    true,
+
+
+                                                ticks:
+                                                    {
+
+                                                        stepSize:
+                                                            1
+
+                                                    }
+
+                                            },
+
+
+                                        y:
+                                            {
+
+                                                ticks:
+                                                    {
+
+                                                        autoSkip:
+                                                            false
+
+                                                    }
+
+                                            }
+
+                                    }
+
+                            }
+
+                    }
+
+                );
+
+
+
+            /* =================================================
+               4. REFERÊNCIAS
+            ================================================= */
+
+            chartReferencia =
+                new Chart(
+
+                    document.getElementById(
+                        "graficoReferencia"
+                    ),
+
+                    {
+
+                        type:
+                            "doughnut",
+
+
+                        data:
+                            {
+
+                                labels:
+                                    [
+
+                                        "Com referência",
+
+                                        "Sem referência"
+
+                                    ],
+
+
+                                datasets:
+                                    [
+
+                                        {
+
+                                            data:
+                                                [
+
+                                                    comReferencia,
+
+                                                    semReferencia
+
+                                                ],
+
+
+                                            backgroundColor:
+                                                [
+
+                                                    "#16A085",
+
+                                                    "#BDC3C7"
+
+                                                ],
+
+
+                                            borderWidth:
+                                                4,
+
+
+                                            borderColor:
+                                                "#ffffff"
+
+                                        }
+
+                                    ]
+
+                            },
+
+
+                        options:
+                            {
+
+                                responsive:
+                                    true,
+
+
+                                maintainAspectRatio:
+                                    false,
+
+
+                                cutout:
+                                    "58%",
+
+
+                                plugins:
+                                    {
+
+                                        legend:
+                                            {
+
+                                                position:
+                                                    "bottom",
+
+
+                                                labels:
+                                                    {
+
+                                                        padding:
+                                                            18,
+
+
+                                                        usePointStyle:
+                                                            true
+
+                                                    }
+
+                                            }
+
+                                    }
+
+                            }
+
+                    }
+
+                );
+
+        }
+
+
+
+        /* ==================================================
+           CARREGAR PLANILHA
+        ================================================== */
+
+        Papa.parse(
+
+            urlPlanilha,
+
+            {
+
+                download:
+                    true,
+
+
+                header:
+                    true,
+
+
+                skipEmptyLines:
+                    true,
+
+
+                complete:
+                    async function(
+                        resultados
+                    ) {
+
+
+                        dadosGlobais =
+                            resultados.data.filter(
+
+                                linha =>
+
+                                    linha[
+                                        "INSTITUTO"
+                                    ]
+                                    &&
+                                    linha[
+                                        "INSTITUTO"
+                                    ].trim() !== ""
+
+                            );
+
+
+
+                        /*
+                         * Mostra dashboard.
+                         */
+
+                        document.getElementById(
+                            "dashboard"
+                        ).style.display =
+                            "grid";
+
+
+
+                        /*
+                         * Filtros.
+                         */
+
+                        preencherOpcoesDosFiltros(
+                            dadosGlobais
+                        );
+
+
+
+                        /*
+                         * Projetos e gráficos.
+                         */
+
+                        aplicarFiltros();
+
+
+
+                        /*
+                         * Mapa.
+                         */
+
+                        await
+                            inicializarEMapearUnidades();
+
+                    },
+
+
+                error:
+                    function(
+                        erro
+                    ) {
+
+                        console.error(
+                            erro
+                        );
+
+
+                        document.getElementById(
+                            "projetos"
+                        ).innerHTML = `
+
+                            <div class="erro-carregamento">
+
+                                <h3>
+                                    Não foi possível carregar os dados.
+                                </h3>
+
+                                <p>
+                                    Verifique a publicação da
+                                    planilha do Google e sua conexão.
+                                </p>
+
+                            </div>
+
+                        `;
+
+                    }
+
+            }
+
+        );
+
     </script>
+
+
 </body>
+
 </html>
