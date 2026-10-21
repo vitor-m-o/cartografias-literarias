@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quem Somos | Cartografias Literárias</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .menu-principal {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 12px 18px;
+            background: #fff;
+            border-bottom: 1px solid #e4e9e6;
+            box-shadow: 0 3px 10px rgba(0,0,0,.04);
+        }
+        .menu-link {
+            display: inline-block;
+            padding: 10px 18px;
+            border-radius: 9px;
+            text-decoration: none;
+            color: #475467;
+            font-weight: 750;
+            transition: background .2s, color .2s;
+        }
+        .menu-link:hover, .menu-link.ativo {
+            color: #247a32;
+            background: #eef8f0;
+        }
+        .quem-somos-intro {
+            max-width: 850px;
+            margin: 0 auto 35px;
+            text-align: center;
+        }
+        .quem-somos-intro h2 {
+            margin: 8px 0 12px;
+            color: #263238;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+        }
+        .quem-somos-intro p {
+            margin: 0 auto;
+            color: #667085;
+            line-height: 1.75;
+            max-width: 760px;
+        }
+        .equipe-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+            gap: 24px;
+        }
+        .integrante-card {
+            overflow: hidden;
+            background: #fff;
+            border: 1px solid #e4e9e6;
+            border-radius: 16px;
+            box-shadow: 0 6px 18px rgba(0,0,0,.06);
+            transition: transform .2s, box-shadow .2s;
+        }
+        .integrante-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 26px rgba(0,0,0,.10);
+        }
+        .integrante-foto-wrap {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            background: #eaf4ec;
+            overflow: hidden;
+            display: grid;
+            place-items: center;
+        }
+        .integrante-foto {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .integrante-fallback {
+            display: none;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+            color: #2f9e41;
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #eef8f0, #dcefe0);
+        }
+        .integrante-conteudo {
+            padding: 22px;
+        }
+        .integrante-funcao {
+            display: inline-block;
+            margin-bottom: 10px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: #eef8f0;
+            color: #247a32;
+            font-size: .75rem;
+            font-weight: 800;
+        }
+        .integrante-nome {
+            margin: 0 0 10px;
+            color: #263238;
+            font-size: 1.2rem;
+            line-height: 1.35;
+        }
+        .integrante-bio {
+            margin: 0;
+            color: #667085;
+            font-size: .94rem;
+            line-height: 1.7;
+            overflow-wrap: anywhere;
+        }
+        .equipe-vazia {
+            grid-column: 1 / -1;
+            padding: 35px 22px;
+            text-align: center;
+            background: #fff;
+            border: 1px dashed #cbd5ce;
+            border-radius: 14px;
+            color: #667085;
+            line-height: 1.7;
+        }
+        .equipe-vazia strong { color: #263238; }
+        .voltar-inicio {
+            display: inline-block;
+            margin-top: 28px;
+            padding: 11px 18px;
+            border-radius: 9px;
+            background: #2f9e41;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 800;
+        }
+        .voltar-inicio:hover { background: #247a32; }
+        .rodape-quem-somos {
+            padding: 25px 20px;
+            text-align: center;
+            color: #667085;
+            background: #fff;
+            border-top: 1px solid #e4e9e6;
+            font-size: .85rem;
+        }
+        @media (max-width: 600px) {
+            .equipe-grid { grid-template-columns: 1fr; }
+            .integrante-conteudo { padding: 19px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="cabecalho-if">
+        <div class="cabecalho-conteudo">
+            <img src="fotos/cartografias-literarias-logo.png" alt="Logo Cartografias Literárias" class="logo-if">
+            <h1>Cartografias Literárias</h1>
+            <p>Conheça as pessoas que contribuíram para a construção deste projeto.</p>
+        </div>
+        
+        <div class="redes-sociais">
+
+            <a
+                href="https://www.instagram.com/cartografiasliterariascmq/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn-social btn-insta"
+            >
+                Instagram
+            </a>
+
+
+            <a
+                href="mailto:cartografiasliterariascmq@gmail.com"
+                class="btn-social btn-email"
+            >
+                Contate-nos por E-mail
+            </a>
+
+        </div>
+
+        <div class="galeria-topo">
+            <img src="fotos/ifsul-logo.png" alt="Instituto Federal">
+        </div>
+        
+    </header>
+
+    <nav class="menu-principal" aria-label="Navegação principal">
+        <a href="index.html" class="menu-link">Início</a>
+        <a href="quem-somos.html" class="menu-link ativo" aria-current="page">Quem somos</a>
+    </nav>
+
+    <main class="sessao">
+        <section class="quem-somos-intro">
+            <span class="eyebrow">NOSSA EQUIPE</span>
+            <h2>Quem Somos</h2>
+            <p>
+                O Cartografias Literárias é construído com a colaboração de pessoas que ajudam a
+                mapear, organizar e divulgar iniciativas de incentivo à leitura. Nesta página,
+                apresentamos os integrantes e suas contribuições para o projeto.
+            </p>
+        </section>
+
+        <section id="equipe" class="equipe-grid" aria-label="Integrantes do projeto"></section>
+
+        <div style="text-align:center">
+            <a href="index.html" class="voltar-inicio">Voltar ao início</a>
+        </div>
+    </main>
+
+    <footer class="rodape-quem-somos">
+        Cartografias Literárias · Projeto de incentivo à leitura
+    </footer>
+
+    <script>
+        /*
+         * ADICIONE OS INTEGRANTES ABAIXO.
+         * Faça uma cópia do exemplo comentado para cada pessoa.
+         * Guarde as fotos na mesma pasta deste arquivo ou altere o caminho de "foto".
+         * Não deixe nomes ou biografias fictícias no site publicado.
+
+        const integrantes = [
+            {
+                nome: "Nome completo",
+                participacao: "Ex.: Pesquisa e organização dos dados",
+                foto: "fotos/nome-da-pessoa.jpg",
+                texto: "Escreva aqui um pequeno texto sobre a pessoa, seu papel e sua contribuição para o projeto."
+            },
+            {
+                nome: "Nome de outra pessoa",
+                participacao: "Ex.: Desenvolvimento do site",
+                foto: "fotos/outra-pessoa.jpg",
+                texto: "Descreva aqui a participação desta pessoa no projeto."
+            }
+        ];
+        */
+
+        // Cole e preencha os objetos reais dos integrantes neste array.
+        const integrantes = [
+            {
+                nome: "Vítor Maziero Oliveira",
+                participacao: "Bolsista de pesquisa e desenvolvimento do site",
+                foto: "fotos/vitor-mo.png",
+                texto: "Prazer, sou Vítor Maziero Oliveira e curso o Ensino Médio integrado ao Técnico em Automação Industrial no IFSul. Vejo a literatura como uma porta para a liberdade intelectual e social, pois acredito que o acesso à leitura e o desenvolvimento da capacidade de interpretar e compreender textos são fundamentais para a formação humana."
+            },
+            {
+                nome: "Sandra Salenave",
+                participacao: "Professora Orientadora",
+                foto: "fotos/sandra-salenave.jpg",
+                texto: "Olá, sou a professora Sandra Salenave, docente do IFSul campus Camaquã desde 2014. Sou apaixonada pela literatura, por isso fiz Letras e depois mestrado e doutorado nessa área. Para mim, ler é fundamental, porque te faz compreender outras realidades e situações, te permite aprender, de uma maneira única."
+            },
+            {
+                nome: "Gabrielli Bandow",
+                participacao: "Voluntária de pesquisa e organização do projeto",
+                foto: "fotos/gabrielli-bandow.jpg",
+                texto: "Oii! Eu sou a Gabrielli Bandow e curso o ensino médio técnico em Informática no IFSul. Para mim, a leitura é importante pois apresentou, desde que eu era muito jovem, diferentes mundos e realidades as quais eu não poderia alcançar de maneira física. Por isso, me apaixonei grandemente por livros e pelo conhecimento que eles trazem."
+            },
+            {
+                nome: "Geovana Silva",
+                participacao: "Voluntária de pesquisa e organização do projeto",
+                foto: "fotos/geovana-silva.jpg",
+                texto: "Oii! Eu sou a Gabrielli Bandow e curso o ensino médio técnico em Informática no IFSul. Para mim, a leitura é importante pois apresentou, desde que eu era muito jovem, diferentes mundos e realidades as quais eu não poderia alcançar de maneira física. Por isso, me apaixonei grandemente por livros e pelo conhecimento que eles trazem."
+            },
+            {
+                nome: "Ana Paula Cecato",
+                participacao: "Professora Orientadora",
+                foto: "fotos/ana-paula-cecato.jpg",
+                texto: "Eu sou Ana Paula, professora do IFRS Campus Viamão e doutoranda em Educação na FACED/UFRGS.  A leitura atravessa a minha existência não só como leitora, mas também como mediadora e ativista na área, acreditando que ela é uma plataforma de impulsionamento das nossas subjetividades."
+            },
+            {
+                nome: "Ana Paula Vial",
+                participacao: "Professora Orientadora",
+                foto: "fotos/ana-paula-vial.jpg",
+                texto: "Sou Ana Paula Vial, professora de língua portuguesa e língua inglesa no IFSul desde 2022. Sou fã de livros desde a infância, o que foi um dos motivos para me levar a cursar Letras. Para mim, a leitura é essencial tanto para a gente escapar da nossa realidade imediata, para experienciar diferentes universos pelas histórias e personagens das obras, quanto para a gente compreender melhor o mundo em que vivemos, refletir sobre ele e questioná-lo."
+            }
+        ];
+
+        const equipe = document.getElementById("equipe");
+
+        function iniciais(nome) {
+            return String(nome || "?")
+                .trim()
+                .split(/\s+/)
+                .slice(0, 2)
+                .map(parte => parte.charAt(0).toUpperCase())
+                .join("");
+        }
+
+        function escaparHTML(texto) {
+            return String(texto ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function renderizarEquipe() {
+            if (integrantes.length === 0) {
+                equipe.innerHTML = `
+                    <div class="equipe-vazia">
+                        <strong>Adicione os integrantes do projeto</strong><br>
+                        No arquivo <code>quem-somos.html</code>, preencha o array
+                        <code>integrantes</code> com o nome, a participação, a foto e o texto de cada pessoa.
+                        O modelo de preenchimento está comentado no final do arquivo.
+                    </div>
+                `;
+                return;
+            }
+
+            equipe.innerHTML = integrantes.map((pessoa, indice) => {
+                const nome = escaparHTML(pessoa.nome || "Integrante");
+                const funcao = escaparHTML(pessoa.participacao || "Colaborador(a)");
+                const texto = escaparHTML(pessoa.texto || "");
+                const foto = escaparHTML(pessoa.foto || "");
+                const id = `foto-integrante-${indice}`;
+                const iniciaisPessoa = escaparHTML(iniciais(pessoa.nome));
+                const imagem = foto
+                    ? `<img id="${id}" class="integrante-foto" src="${foto}" alt="Foto de ${nome}" loading="lazy">
+                       <div class="integrante-fallback" id="fallback-${indice}" aria-hidden="true">${iniciaisPessoa}</div>`
+                    : `<div class="integrante-fallback" style="display:flex" aria-label="Foto não cadastrada">${iniciaisPessoa}</div>`;
+
+                return `
+                    <article class="integrante-card">
+                        <div class="integrante-foto-wrap">
+                            ${imagem}
+                        </div>
+                        <div class="integrante-conteudo">
+                            <span class="integrante-funcao">${funcao}</span>
+                            <h3 class="integrante-nome">${nome}</h3>
+                            <p class="integrante-bio">${texto}</p>
+                        </div>
+                    </article>
+                `;
+            }).join("");
+
+            integrantes.forEach((pessoa, indice) => {
+                const imagem = document.getElementById(`foto-integrante-${indice}`);
+                const fallback = document.getElementById(`fallback-${indice}`);
+                if (imagem && fallback) {
+                    imagem.addEventListener("error", () => {
+                        imagem.style.display = "none";
+                        fallback.style.display = "flex";
+                    });
+                }
+            });
+        }
+
+        renderizarEquipe();
+    </script>
+</body>
+</html>
